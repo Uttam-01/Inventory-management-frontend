@@ -1,7 +1,41 @@
+"use client";
+import { useState } from "react";
+import axios from "axios";
+
 export default function () {
+  const apiUrl = process.env.API_BASE_URL;
+
+ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username");
+    const password = formData.get("password");
+
+    console.log({ username, password });
+
+    try {
+      const response = await axios.post(`${apiUrl}/login`, {
+        username,
+        password,
+      });
+
+      const token = response.data.token;
+      localStorage.setItem("jwt", token);
+      alert("Login successful!");
+
+    } catch (err) {
+      alert("Login failed.");
+      console.error(err);
+    }
+  }
+
   return (
     <div className="w-full h-[100vh] flex justify-center items-center ">
-      <div className="flex flex-col justify-center items-center py-[50px] h-[546px] w-[448px] rounded-[8px] border-[1px] border-[#E0F2F7]  " style={{ boxShadow: "0px 10px 15px -3px #0000001A" }}>
+      <div
+        className="flex flex-col justify-center items-center py-[50px] h-[546px] w-[448px] rounded-[8px] border-[1px] border-[#E0F2F7]  "
+        style={{ boxShadow: "0px 10px 15px -3px #0000001A" }}
+      >
         <div className="text-[#0F4C81] mb-[40px] text-[24px] font-extrabold">
           Login to IMS
         </div>
@@ -11,7 +45,11 @@ export default function () {
             Management System.
           </div>
         </div>
-        <form className="flex flex-col justify-center items-center " action="">
+        <form
+          onSubmit={onSubmit}
+          className="flex flex-col justify-center items-center "
+          action=""
+        >
           <div className="mb-[30px] flex flex-col">
             <label
               className="mb-[5px] text-[#343A40] text-[14px] font-medium"
@@ -19,8 +57,10 @@ export default function () {
             >
               Username or Email
             </label>
-            <input 
-                style={{ boxShadow: "0px 2px 4px 0px #0000000D" }}  
+            <input
+              required
+              name="username"
+              style={{ boxShadow: "0px 2px 4px 0px #0000000D" }}
               className="border-1 border-[#E5E7EB] rounded-[6px] h-[42px] w-[366px] px-4 font-normal text-[16px]"
               placeholder="Enter your username or email"
               type="text"
@@ -34,13 +74,17 @@ export default function () {
               Password
             </label>
             <input
+              required
+              name="password"
               style={{ boxShadow: "0px 2px 4px 0px #0000000D" }}
               className="border-1 border-[#E5E7EB] rounded-[6px] h-[42px] w-[366px] px-4 font-normal text-[16px]"
               placeholder="Enter your password"
               type="password"
             />
           </div>
-          <button className="bg-[#0F4C81] text-[#ffffff] rounded-[6px] w-[366px] h-[52px] text-[18px] flex items-center justify-center font-semibold">Log In</button>
+          <button className="bg-[#0F4C81] hover:cursor-pointer text-[#ffffff] rounded-[6px] w-[366px] h-[52px] text-[18px] flex items-center justify-center font-semibold">
+            Log In
+          </button>
         </form>
       </div>
     </div>
