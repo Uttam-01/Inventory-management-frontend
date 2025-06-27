@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function () {
-  const apiUrl = process.env.API_BASE_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -12,10 +12,11 @@ export default function () {
     const username = formData.get("username");
     const password = formData.get("password");
 
-    console.log({ username, password });
+    console.log({ username, password ,  }, `${apiUrl}/auth/login`);
 
     try {
-      const response = await axios.post(`${apiUrl}/login`, {
+
+      const response = await axios.post(`${apiUrl}auth/login`, {
         username,
         password,
       });

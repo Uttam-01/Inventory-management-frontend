@@ -10,12 +10,12 @@ function Navbar() {
          top-0 left-0"
         >
           <div className="w-full flex-col flex items-center justify-center mt-[50px]">
-            <SidebarOption to={"./dashboard"} name="Dashboard"/>
-            <SidebarOption to={"./machine-list"} name="Machine List"/>
-            <SidebarOption to={"./material-master"} name="Material Master"/>
-            <SidebarOption to={"./vendor-master"} name="Vendor Master"/>
-            <SidebarOption to={".work-order-master"} name="Work Order Master"/>
-            <SidebarOption to={"./work-order-add"} name="Work Order Add/Edit"/>
+            <SidebarOption to={"/dashboard"} name="Dashboard"/>
+            <SidebarOption to={"/machine-list"} name="Machine List"/>
+            <SidebarOption to={"/component-master"} name="Component Master"/>
+            <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
+            <SidebarOption to={"/work-order-master"} name="Work Order Master"/>
+            <SidebarOption to={"/administrator-dashboard"} name="admin dash"/>
 
           </div>
           
