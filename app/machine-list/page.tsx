@@ -1,11 +1,16 @@
+"use client"
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
 import Link from "next/link";
+import { useMachines } from "@/lib/api/useMachines";
+
 export default function () {
 
+  const {data, isLoading, error} = useMachines();
+
   return (
-    <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+    <div className="w-[1404px] mx-auto flex flex-col h-min bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">Machine List</div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 text-[14px] font-normal  font-emoji h-[54px] items-center">
         Manage your machines and their required spare parts. You can add new

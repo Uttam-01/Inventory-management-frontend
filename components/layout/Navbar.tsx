@@ -2,26 +2,28 @@ import { useState } from "react";
 import Navigaion from "./Navigation";
 import Link from "next/link";
 import SidebarOption from "../ui/SidebarOption";
+import { usePathname } from "next/navigation";
 function Navbar() {
   return (
-    <div className="">
-        <div
-          className="bg-white  fixed h-screen w-[256px] shadow transition-transform duration-300 z-40
-         top-0 left-0"
-        >
-          <div className="w-full flex-col flex items-center justify-center mt-[50px]">
+      
+          <div className="bg-white  fixed h-screen w-[256px] transition-transform duration-300  pt-25 z-10 top-0 flex-col flex items-center justify-start">
+
+            <div className="text-[#1F2937] text-[24px] font-bold items-start  w-full px-5 mb-10">
+              Store Manager
+            </div>
             <SidebarOption to={"/dashboard"} name="Dashboard"/>
-            <SidebarOption to={"/machine-list"} name="Machine List"/>
-            <SidebarOption to={"/component-master"} name="Component Master"/>
+            <SidebarOption to={"/machine-list"} name="Machine Management"/>
+            <SidebarOption to={"/component-master"} name="Material Management"/>
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
-            <SidebarOption to={"/work-order-master"} name="Work Order Master"/>
-            <SidebarOption to={"/administrator-dashboard"} name="admin dash"/>
+            <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
+            <SidebarOption to={"/work-order-master/add-new-workorder"} name="Work Order Add/Exit"/>
+            <SidebarOption to={"/material-in"} name="Material IN"/>
+            <SidebarOption to={"/material-out"} name="Material OUT"/>
+            <SidebarOption to={"/allotted-material"} name="Allotted Material"/>
+            <SidebarOption to={"/cancelled-allocated-material"} name="Cancelled Allocated Material"/>
+          
 
           </div>
-          
-        </div>
-      
-    </div>
   );
 }
 

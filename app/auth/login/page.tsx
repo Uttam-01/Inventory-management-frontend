@@ -1,38 +1,37 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+import { Login } from "@/lib/api/login";
+import { useRouter } from "next/navigation";
 
 export default function () {
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
- const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
-    const username = formData.get("username");
-    const password = formData.get("password");
-
-    console.log({ username, password ,  }, `${apiUrl}/auth/login`);
+    const email = formData.get("username") as string;
+    const password = formData.get("password") as string;
 
     try {
+      const data = await Login(email, password);
+      const accessToken = data.accessToken;
+      localStorage.setItem("accessToken", accessToken);
+      const refreshToken = data.refreshToken;
+      localStorage.setItem("refreshToken", refreshToken);
 
-      const response = await axios.post(`${apiUrl}auth/login`, {
-        username,
-        password,
-      });
-
-      const token = response.data.token;
-      localStorage.setItem("jwt", token);
-      alert("Login successful!");
-
+      if (data.roles[0] === 'SUPER_ADMIN') {
+        router.replace('/administrator-dashboard');
+      } else {
+        router.replace('/dashboard');
+      }
     } catch (err) {
-      alert("Login failed.");
       console.error(err);
+      router.refresh();
+      alert("Invalid Email or Password.")
     }
-  }
+  };
 
   return (
-    <div className="w-full h-[100vh] flex justify-center items-center ">
+    <div className="w-screen h-screen  fixed top-0 left-0 flex justify-center items-center ">
       <div
         className="flex flex-col justify-center items-center py-[50px] h-[546px] w-[448px] rounded-[8px] border-[1px] border-[#E0F2F7]  "
         style={{ boxShadow: "0px 10px 15px -3px #0000001A" }}
@@ -91,3 +90,7 @@ export default function () {
     </div>
   );
 }
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+

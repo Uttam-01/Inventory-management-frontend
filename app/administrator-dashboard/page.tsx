@@ -11,7 +11,7 @@ export default function(){
                 </div>
                 <div className="w-[334px] h-[92px] flex flex-col items-start justify-center px-5 bg-[#DCFCE7] rounded-[8px] shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_3px_0px_#0000001A,0px_1px_2px_-1px_#0000001A] ">
                     <div className="font-semibold text-[18px]">Recent User Logins:</div>
-                    <div className="font-bold text-[24px]">12i</div>
+                    <div className="font-bold text-[24px]">12</div>
                 </div>
             </div>
             <div className="flex justify-between items-center mt-[30px]">
