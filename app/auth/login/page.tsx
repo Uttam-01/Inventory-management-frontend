@@ -17,7 +17,7 @@ export default function () {
       localStorage.setItem("accessToken", accessToken);
       const refreshToken = data.refreshToken;
       localStorage.setItem("refreshToken", refreshToken);
-
+      console.log(accessToken,"login")
       if (data.roles[0] === 'SUPER_ADMIN') {
         router.replace('/administrator-dashboard');
       } else {

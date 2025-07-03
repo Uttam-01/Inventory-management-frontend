@@ -1,13 +1,35 @@
-"use client"
+"use client";
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
 import Link from "next/link";
 import { useMachines } from "@/lib/api/useMachines";
+import { useEffect, useState } from "react";
+
+type Machine = {
+  description: String;
+  id: number;
+  machineType: string;
+  model: string;
+  modelNumber: string;
+  name: string;
+  price: number;
+  weight: number;
+};
 
 export default function () {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const {data, isLoading, error} = useMachines();
+  const { data, isLoading, error } = useMachines();
+
+  if (!mounted) return null;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading machines.</div>;
+
+  // If your API returns { machines: [...] }, use data?.machines || []
+
+  console.log(data);
 
   return (
     <div className="w-[1404px] mx-auto flex flex-col h-min bg-[#ffffff] rounded-[8px] p-8 justify-start ">
@@ -27,7 +49,6 @@ export default function () {
           />
           <svg
             className="absolute top-4 left-3"
-
             width="17"
             height="16"
             viewBox="0 0 17 16"
@@ -65,25 +86,26 @@ export default function () {
           </div>
           <div className="w-[16.6%] flex justify-center">ACTIONS</div>
         </div>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <div
-            key={index}
-            className={`flex justify-evenly  items-center h-[64px] ${
-              index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
-            }`}
-          >
-            <div className="w-[16.6%] flex justify-center">P7 150</div>
-            <div className="w-[16.6%] flex justify-center">Sand Blasting</div>
-            <div className="w-[16.6%] flex justify-center">SB</div>
-            <div className="w-[16.6%] flex justify-center">150</div>
-            <div className="w-[16.6%] flex justify-center">15</div>
-            <div className="w-[16.6%] flex justify-center items-center gap-4">
-              <Edit to="/" />
-              <Delete to="/"></Delete>
-            </div>
+        {data.map((machine: Machine, index: number) => (
+        <div
+          key={index}
+          className={`flex justify-evenly  items-center h-[64px] ${
+            index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
+          }`}
+        >
+          <div className="w-[16.6%] flex justify-center">{machine.name}</div>
+          <div className="w-[16.6%] flex justify-center">{machine.machineType}</div>
+          <div className="w-[16.6%] flex justify-center">{machine.model}</div>
+          <div className="w-[16.6%] flex justify-center">{machine.modelNumber}</div>
+          <div className="w-[16.6%] flex justify-center">15</div>
+          <div className="w-[16.6%] flex justify-center items-center gap-4">
+            <Edit to="/" />
+            <Delete to="/"></Delete>
           </div>
-        ))}
+        </div>
+      ))}
       </div>
+      
     </div>
   );
 }

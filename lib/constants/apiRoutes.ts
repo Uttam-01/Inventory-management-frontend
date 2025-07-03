@@ -4,5 +4,6 @@ export const API_ROUTES = {
   LOGIN: `${baseUrl}auth/login`,
   MACHINES: `${baseUrl}machines`,
   VENDOR: `${baseUrl}vendor`,
-  REFRESH: `${baseUrl}auth/refresh`
+  REFRESH: `${baseUrl}auth/refresh`,
+  COMPONENT: `${baseUrl}component`,
 };

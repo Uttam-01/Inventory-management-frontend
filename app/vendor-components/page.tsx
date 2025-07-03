@@ -1,43 +1,22 @@
-"use client";
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useVendors } from "@/lib/api/useVendors";
+
 export default function () {
-  type Vendor = {
-    city: string,
-    gstNumber: string,
-    name: string,
-    phoneNumber: string,
-  };
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const { data, isLoading, error } = useVendors();
-
-  if (!mounted) return null;
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading Vendors.</div>;
-
-  // If your API returns { machines: [...] }, use data?.machines || []
-
-  console.log(data);
+  
+    
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">
-        Vendor Management
+        Vendor Components
       </div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 mb-3 text-[14px] font-normal  font-emoji h-[54px] items-center">
-        Manage your vendor information efficiently.
+        Attach your vendor & components information efficiently.
       </div>
       <div className="flex justify-between items-center">
-        <AddButton
-          to="/vendor-management/add-new-vendor"
-          text="Add New Vendor"
-        />
+        <AddButton to="/vendor-management/add-new-vendor-component" text="Add New Vendor Components" />
         <div className="relative h-[50px] w-[444px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
           <input
             type="text"
@@ -75,22 +54,22 @@ export default function () {
       <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB]">
         <div className="flex justify-center bg-[#E5E7EB] h-[41px] items-center">
           <div className="w-[20%] flex justify-center">VENDOR NAME</div>
-          <div className="w-[20%] flex justify-center">CONTACT NO</div>
-          <div className="w-[20%] flex justify-center">CITY</div>
-          <div className="w-[20%] flex justify-center">GST NO</div>
+          <div className="w-[20%] flex justify-center">COMPONENT NAME</div>
+          <div className="w-[20%] flex justify-center">PRICE </div>
+          <div className="w-[20%] flex justify-center">DELIVERY TIME</div>
           <div className="w-[20%] flex justify-center">ACTIONS</div>
         </div>
-        {data.map((vendor: Vendor, index : number) => (
+        {Array.from({ length: 2 }).map((_, index) => (
           <div
             key={index}
             className={`flex justify-evenly  items-center h-[64px] ${
               index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
             }`}
           >
-            <div className="w-[20%] flex justify-center">{vendor.name}</div>
-            <div className="w-[20%] flex justify-center">{vendor.phoneNumber}</div>
-            <div className="w-[20%] flex justify-center">{vendor.city}</div>
-            <div className="w-[20%] flex justify-center">{vendor.gstNumber}</div>
+            <div className="w-[20%] flex justify-center">Vendor A</div>
+            <div className="w-[20%] flex justify-center">Nozzle 10mm</div>
+            <div className="w-[20%] flex justify-center">200</div>
+            <div className="w-[20%] flex justify-center">03 Days</div>
             <div className="w-[20%] flex justify-center items-center gap-4">
               <Edit to="/" />
               <Delete to="/"></Delete>
@@ -101,3 +80,5 @@ export default function () {
     </div>
   );
 }
+
+

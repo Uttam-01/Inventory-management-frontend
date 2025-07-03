@@ -19,10 +19,9 @@ export async function authRequest(config: Parameters<typeof axios.request>[0]) {
       },
       
     });
-    console.log(res.data);
     return res.data;
   } catch (error: any) {
-    console.log("accesstoken error")
+    console.log("accesstoken error", error.response)
     if (error.response && error.response.status === 403) {
       
       const refreshTokenn = localStorage.getItem("refreshToken");
