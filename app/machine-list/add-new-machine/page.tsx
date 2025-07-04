@@ -5,14 +5,20 @@ import { useEffect, useState } from "react";
 import { useAddMachines } from "@/lib/api/addMachines";
 import { machineSchema } from "@/lib/schemas";
 import { useComponents } from "@/lib/api/useComponents";
+import { Machine } from "@/lib/schemas";
 
 function AddNewMachine() {
+  const [quantity, setQuantity] = useState<number>(0);
   const [components, setComponents] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
+  const [reqComponents, setReqComponents] = useState<
+    { name: string; quantity: number }[]
+  >([]);
   const [mounted, setMounted] = useState(false);
+
+
   useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useComponents();
   useEffect(() => {
@@ -49,6 +55,10 @@ function AddNewMachine() {
   if (addMachineMutation.isSuccess) return <div>Vendor saved!</div>;
   if (addMachineMutation.isError) return <div>Error saving vendor.</div>;
 
+  async function formSubmit() {
+    
+  }
+
   return (
     <div className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]">
       <div className="text-[#0F4C81] font-bold text-[20px]">
@@ -63,7 +73,7 @@ function AddNewMachine() {
         <div className="text-[#1F2937] text-[16px] font-semibold">
           Machine Details
         </div>
-        <form onSubmit={() => console.log("submitted")}>
+        <form onSubmit={() => formSubmit}>
           <div className="flex flex-wrap gap-x-6 gap-y-3 mt-[10px]">
             <input
               className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
@@ -101,16 +111,64 @@ function AddNewMachine() {
               placeholder="Description"
             />
           </div>
+
           <div className="text-[#1F2937] text-[16px] font-semibold mt-6">
             Required Spare Parts
           </div>
-          <div>
-            
+
+          <div className="flex w-full flex-wrap flex-row gap-3 mt-3 rounded-[8px]">
+            {reqComponents.map(
+              (component: { name: string; quantity: number }, i: number) => {
+                if(component.quantity >0){
+                  return (
+                  <div
+                    className="h-[25px] text-[16px] flex justify-center items-center px-3 bg-[#DBEAFE] rounded-4"
+                    key={i}
+                  >
+                    <p>{component.name}</p>
+                    <p className="ml-1">({component.quantity})</p>
+                    <svg
+                      className="ml-4 h-[10px] hover:cursor-pointer"
+                      onClick={() =>
+                        setReqComponents((prev) =>
+                          prev.filter(
+                            (component) => component.name !== selected.name
+                          )
+                        )
+                      }
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M13.75 1.25L1.25 13.75"
+                        stroke="#1A1A1A"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M1.25 1.25L13.75 13.75"
+                        stroke="#1A1A1A"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                );
+                }else return("");
+                
+              }
+            )}
           </div>
 
-          <div className="flex gap-x-4 gap-y-3 mt-[10px] items-center ">
-            <div className="relative flex flex-col  w-[338px]">
+          <div className="flex gap-x-4 gap-y-3 mt-[10px] items-center  ">
+            <div className="relative flex flex-col  w-[450px]">
               <button
+                type="button"
                 onClick={() => setIsOpen(isOpen ? false : true)}
                 className="h-[50px] w-full border-[1px] border-[#D1D5DB] flex items-center justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
               >
@@ -176,15 +234,116 @@ function AddNewMachine() {
               </div>
             </div>
             <input
+              onChange={(e) => setQuantity(Number(e.target.value))}
               required
               className="h-[50px] w-[200px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
               type="number"
               placeholder="Quantity Required"
             />
-            <Delete to="/" />
+            <div
+            onClick={() => {
+              console.log(selected, quantity);
+              if (
+                selected.name != null &&
+                selected.name != "" &&
+                quantity != null &&
+                quantity != 0
+              ) {
+                const temp = reqComponents.find(
+                  (comp) => comp.name === selected.name
+                );
+                if (temp) {
+                  setReqComponents((prev) =>
+                    prev.map((comp) =>
+                      comp.name === selected.name
+                        ? { ...comp, quantity: Math.max(comp.quantity - quantity, 0) }
+                        : comp
+                    )
+                  );
+                } else {
+                  setReqComponents((prev) => [
+                    ...prev,
+                    { name: selected.name, quantity: quantity },
+                  ]);
+                }
+              }
+            }}
+            
+            className="w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center hover:cursor-pointer">
+              <svg
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clipPath="url(#clip0_16_2934)">
+                  <path
+                    d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
+                    fill="#DC3545"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_16_2934">
+                    <rect
+                      width="16"
+                      height="16"
+                      fill="white"
+                      transform="translate(0.143311)"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
           </div>
-          <div className="w-[181px]">
-            <AddButton to="/" text="Add Material" />
+          <div
+            onClick={() => {
+              console.log(selected, quantity);
+              if (
+                selected.name != null &&
+                selected.name != "" &&
+                quantity != null &&
+                quantity != 0
+              ) {
+                const temp = reqComponents.find(
+                  (comp) => comp.name === selected.name
+                );
+                if (temp) {
+                  setReqComponents((prev) =>
+                    prev.map((comp) =>
+                      comp.name === selected.name
+                        ? { ...comp, quantity: comp.quantity + quantity }
+                        : comp
+                    )
+                  );
+                } else {
+                  setReqComponents((prev) => [
+                    ...prev,
+                    { name: selected.name, quantity: quantity },
+                  ]);
+                }
+              }
+            }}
+            className="w-[181px]"
+          >
+            <button
+              type="button"
+              className="hover:cursor-pointer text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5"
+            >
+              <svg
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.1001 6.5H9.6001V2C9.6001 1.44781 9.15229 1 8.6001 1H7.6001C7.04791 1 6.6001 1.44781 6.6001 2V6.5H2.1001C1.54791 6.5 1.1001 6.94781 1.1001 7.5V8.5C1.1001 9.05219 1.54791 9.5 2.1001 9.5H6.6001V14C6.6001 14.5522 7.04791 15 7.6001 15H8.6001C9.15229 15 9.6001 14.5522 9.6001 14V9.5H14.1001C14.6523 9.5 15.1001 9.05219 15.1001 8.5V7.5C15.1001 6.94781 14.6523 6.5 14.1001 6.5Z"
+                  fill="white"
+                />
+              </svg>
+              Add Material
+            </button>
           </div>
           <div className="mt-[25px]">
             <div className="w-full flex h-[42px] items-center justify-end gap-4">
@@ -201,4 +360,5 @@ function AddNewMachine() {
     </div>
   );
 }
+
 export default AddNewMachine;

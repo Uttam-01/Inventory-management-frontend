@@ -7,14 +7,12 @@ import { useMachines } from "@/lib/api/useMachines";
 import { useEffect, useState } from "react";
 
 type Machine = {
-  description: String;
   id: number;
   machineCategory: string;
   model: string;
   modelNumber: string;
   name: string;
-  price: number;
-  weight: number;
+  associateSpareCount: number,
 };
 
 export default function () {
@@ -22,7 +20,7 @@ export default function () {
   useEffect(() => setMounted(true), []);
 
   const { data, isLoading, error } = useMachines();
-
+  console.log(data);
   if (!mounted) return null;
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading machines.</div>;
@@ -99,7 +97,7 @@ export default function () {
           <div className="w-[16.6%] flex justify-center">{machine.machineCategory}</div>
           <div className="w-[16.6%] flex justify-center">{machine.model}</div>
           <div className="w-[16.6%] flex justify-center">{machine.modelNumber}</div>
-          <div className="w-[16.6%] flex justify-center">15</div>
+          <div className="w-[16.6%] flex justify-center">{machine.associateSpareCount}</div>
           <div className="w-[16.6%] flex justify-center items-center gap-4">
             <Edit to="/" />
             <Delete to="/"></Delete>
