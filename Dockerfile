@@ -26,7 +26,7 @@ ENV NODE_ENV=production \
     PORT=3000 \
     NEXT_TELEMETRY_DISABLED=true
 
-COPY package.json ./
+COPY package*.json ./
 
 RUN npm ci --omit=dev && \
     npm prune --production && \
