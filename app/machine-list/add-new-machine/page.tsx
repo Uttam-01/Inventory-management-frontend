@@ -49,10 +49,6 @@ function AddNewMachine() {
   if (addMachineMutation.isSuccess) return <div>Vendor saved!</div>;
   if (addMachineMutation.isError) return <div>Error saving vendor.</div>;
 
-  const [reqComponents, setReqComponents] = useState<
-    { name: string; quantity: number }[]
-  >([]);
-
   return (
     <div className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]">
       <div className="text-[#0F4C81] font-bold text-[20px]">

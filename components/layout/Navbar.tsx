@@ -1,8 +1,5 @@
-import { useState } from "react";
-import Navigaion from "./Navigation";
-import Link from "next/link";
+
 import SidebarOption from "../ui/SidebarOption";
-import { usePathname } from "next/navigation";
 function Navbar() {
   return (
       
