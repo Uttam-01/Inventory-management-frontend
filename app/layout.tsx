@@ -1,5 +1,5 @@
 "use client"
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/components/layout/NavbarWrapper";
 import { Roboto } from "next/font/google";

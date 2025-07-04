@@ -2,11 +2,11 @@
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useVendors } from "@/lib/api/useVendors";
 export default function () {
   type Vendor = {
+    id:number,
     city: string,
     gstNumber: string,
     name: string,
@@ -92,7 +92,7 @@ export default function () {
             <div className="w-[20%] flex justify-center">{vendor.city}</div>
             <div className="w-[20%] flex justify-center">{vendor.gstNumber}</div>
             <div className="w-[20%] flex justify-center items-center gap-4">
-              <Edit to="/" />
+              <Edit to={`/vendor-management/edit-vendor/${vendor.id}`} />
               <Delete to="/"></Delete>
             </div>
           </div>

@@ -63,7 +63,7 @@ export default function () {
               style={{ boxShadow: "0px 2px 4px 0px #0000000D" }}
               className="border-1 border-[#E5E7EB] rounded-[6px] h-[42px] w-[366px] px-4 font-normal text-[16px]"
               placeholder="Enter your username or email"
-              type="text"
+              type="email"
             />
           </div>
           <div className=" mb-[40px] flex flex-col">

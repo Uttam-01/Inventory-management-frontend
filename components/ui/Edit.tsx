@@ -1,7 +1,9 @@
+import Link from "next/link";
+
 function Edit(e: { to: string }) {
   return (
     <div>
-      <button className="w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center">
+      <Link href={e.to} className="w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center">
         <svg
           width="17"
           height="16"
@@ -14,7 +16,7 @@ function Edit(e: { to: string }) {
             fill="#0F4C81"
           />
         </svg>
-      </button>
+      </Link>
     </div>
   );
 }

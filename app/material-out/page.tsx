@@ -1,22 +1,6 @@
-import AddButton from "@/components/ui/Add";
-import Edit from "@/components/ui/Edit";
-import Delete from "@/components/ui/Delete";
-import Link from "next/link";
 
-function InputBox(e: { label: string; placeholder: string }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
-        {e.label}
-      </label>
-      <input
-        type="text"
-        placeholder={e.placeholder}
-        className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
-      />
-    </div>
-  );
-}
+
+
 
 export default function () {
   return (

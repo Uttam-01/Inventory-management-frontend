@@ -2,14 +2,14 @@
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
-import Link from "next/link";
+
 import { useMachines } from "@/lib/api/useMachines";
 import { useEffect, useState } from "react";
 
 type Machine = {
   description: String;
   id: number;
-  machineType: string;
+  machineCategory: string;
   model: string;
   modelNumber: string;
   name: string;
@@ -27,6 +27,8 @@ export default function () {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading machines.</div>;
 
+
+
   // If your API returns { machines: [...] }, use data?.machines || []
 
   console.log(data);
@@ -40,7 +42,7 @@ export default function () {
         Use this master to enable inventory forecasting.
       </div>
       <div className="flex justify-between items-center">
-        <AddButton to="/add-new-machine" text="Add New Machine" />
+        <AddButton to="/machine-list/add-new-machine" text="Add New Machine" />
         <div className="relative h-[50px] w-[444px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
           <input
             type="text"
@@ -94,7 +96,7 @@ export default function () {
           }`}
         >
           <div className="w-[16.6%] flex justify-center">{machine.name}</div>
-          <div className="w-[16.6%] flex justify-center">{machine.machineType}</div>
+          <div className="w-[16.6%] flex justify-center">{machine.machineCategory}</div>
           <div className="w-[16.6%] flex justify-center">{machine.model}</div>
           <div className="w-[16.6%] flex justify-center">{machine.modelNumber}</div>
           <div className="w-[16.6%] flex justify-center">15</div>

@@ -1,7 +1,4 @@
-import AddButton from "@/components/ui/Add";
-import Edit from "@/components/ui/Edit";
-import Delete from "@/components/ui/Delete";
-import Link from "next/link";
+
 function Svg(){
     return(
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,7 +1,4 @@
-import AddButton from "@/components/ui/Add";
-import Edit from "@/components/ui/Edit";
-import Delete from "@/components/ui/Delete";
-import Link from "next/link";
+
 export default function () {
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-10 justify-start shadow ">

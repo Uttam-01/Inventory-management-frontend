@@ -2,7 +2,7 @@
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
-import Link from "next/link";
+
 import { useComponents } from "@/lib/api/useComponents";
 import { useEffect, useState } from "react";
 

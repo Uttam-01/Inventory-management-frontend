@@ -5,7 +5,7 @@ function SidebarOption(e: { name: string; to: string }) {
   const pathname = usePathname();
   const pathParts = pathname.split("/").filter(Boolean);
 
-  console.log(pathParts[pathParts.length -1] , e.to);
+  
   if (pathname.startsWith("/auth")) return null;
   return (
     <Link

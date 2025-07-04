@@ -1,7 +1,4 @@
-import AddButton from "@/components/ui/Add";
-import Edit from "@/components/ui/Edit";
-import Delete from "@/components/ui/Delete";
-import Link from "next/link";
+
 
 function InputBox(e: { label: string; placeholder: string }) {
   return (

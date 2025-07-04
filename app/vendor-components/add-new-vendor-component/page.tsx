@@ -1,6 +1,5 @@
 "use client";
-import Delete from "@/components/ui/Delete";
-import AddButton from "@/components/ui/Add";
+
 import React, { useEffect, useState } from "react";
 import { useComponents } from "@/lib/api/useComponents";
 import { useVendors } from "@/lib/api/useVendors";
