@@ -1,0 +1,16 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: next-app
+    ports:
+      - "3000:3000"
+    env_file: .env.production
+    environment:
+      - NODE_ENV=production
+    # volumes:
+      # - .:/app
+      # - /app/node_modules
+    restart: unless-stopped
