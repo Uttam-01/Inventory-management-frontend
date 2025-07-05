@@ -52,8 +52,7 @@ export const vendorSchema = z.object({
     ),
   gstNumber: z
     .string()
-    .min(1, "GST Number is must.")
-    .transform((val) => val.toUpperCase()),
+    .optional(),
   ifscCode: z
     .string()
     .transform((val) => val.toUpperCase())

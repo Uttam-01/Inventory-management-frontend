@@ -2,7 +2,7 @@
 import Delete from "@/components/ui/Delete";
 import AddButton from "@/components/ui/Add";
 import { useEffect, useState } from "react";
-import { useAddMachines } from "@/lib/api/addMachines";
+import { useAddMachines } from "@/lib/api/useAddMachines";
 import { machineSchema } from "@/lib/schemas";
 import { useComponents } from "@/lib/api/useComponents";
 import { Machine } from "@/lib/schemas";

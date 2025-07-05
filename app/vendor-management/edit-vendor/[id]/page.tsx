@@ -1,5 +1,5 @@
 "use client";
-import { updateVendors } from "@/lib/api/updateVendor";
+import { useUpdateVendors } from "@/lib/api/useUpdateVendor";
 import { Vendor, vendorSchema } from "@/lib/schemas";
 import { useEffect, useState } from "react";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
@@ -60,7 +60,7 @@ export default function () {
   }, [pathname]);
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const updateVendorMutation = updateVendors();
+  const updateVendorMutation = useUpdateVendors();
   
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,77 +113,77 @@ export default function () {
             <InputBox
               name="name"
               label="Vendor Name"
-              placeholder={vendorInfo.name ?? "Enter Vendor Name"}
+              placeholder={ "Enter Vendor Name"}
               error={formErrors.name}
               value={vendorInfo.name ?? ""}
             />
             <InputBox
               name="companyName"
               label="Vendor Firm Name"
-              placeholder={vendorInfo.companyName ?? "Vendor Firm Name"}
+              placeholder={ "Vendor Firm Name"}
               value={vendorInfo.companyName ?? ""}
               error={formErrors.companyName}
             />
             <InputBox
               name="phoneNumber"
               label="Contact No. 1"
-              placeholder={vendorInfo.phoneNumber.toString() ?? "Contact No. 1"}
+              placeholder={ "Contact No. 1"}
               error={formErrors.phoneNumber}
-              value={vendorInfo.phoneNumber ?? ""}
+              value={vendorInfo.phoneNumber.toString() ?? ""}
             />
             <InputBox
               name="alternateNumber"
               label="Contact No. 2"
-              placeholder={vendorInfo.alternateNumber?.toString() ?? ""}
+              placeholder={ "Altermnate Number (Optional)"}
               error={formErrors.alternateNumber}
-              value={vendorInfo.alternateNumber ?? ""}
+              value={vendorInfo.alternateNumber?.toString() ?? ""}
             />
             <InputBox
               name="gstNumber"
               label="GST No"
-              placeholder={vendorInfo.gstNumber ?? "GST No (Optional)"}
+              placeholder={ "GST No (Optional)"}
               error={formErrors.gstNumber}
               value={vendorInfo.gstNumber ?? ""}
             />
             <InputBox
               name="country"
               label="Country"
-              placeholder={vendorInfo.country ?? "Country"}
+              placeholder={ "Country"}
               error={formErrors.country}
               value={vendorInfo.country ?? ""}
             />
             <InputBox
               name="state"
               label="State"
-              placeholder={vendorInfo.state ?? "State"}
+              placeholder={"State"}
               error={formErrors.state}
               value={vendorInfo.state ?? ""}
             />
             <InputBox
               name="city"
               label="City"
-              placeholder={vendorInfo.city ?? "City"}
+              placeholder={ "City"}
               error={formErrors.city}
               value={vendorInfo.city ?? ""}
             />
             <InputBox
               name="panNumber"
               label="Pan Number"
-              placeholder={vendorInfo.panNumber ?? "Pan Number (Optional)"}
+              placeholder={ "Pan Number (Optional)"}
               error={formErrors.panNumber}
               value={vendorInfo.panNumber ?? ""}
             />
             <InputBox
               name="aadhaarNumber"
               label="Aadhaar Number"
-              placeholder={vendorInfo.aadhaarNumber?.toString() ?? ""}
+              placeholder={ "Aadhaar Number (Optional)"}
               error={formErrors.aadhaarNumber}
-              value={vendorInfo.aadhaarNumber ?? ""}
+              value={vendorInfo.aadhaarNumber?.toString() ?? ""}
             />
             <InputBox
               name="bankName"
               label="Bank Name"
-              placeholder={vendorInfo.bankName ?? "Bank Name (Optional)"}
+              placeholder={ "Bank Name (Optional)"}
               error={formErrors.bankName}
               value={vendorInfo.bankName ?? ""}
             />
@@ -191,7 +191,7 @@ export default function () {
               name="accountHolderName"
               label="Account Holder Name"
               placeholder={
-                vendorInfo.accountHolderName ?? "Account Holder Name (Optional)"
+              "Account Holder Name (Optional)"
               }
               error={formErrors.accountHolderName}
               value={vendorInfo.accountHolderName ?? ""}
@@ -200,7 +200,6 @@ export default function () {
               name="accountNumber"
               label="Account Number"
               placeholder={
-                vendorInfo.accountNumber?.toString() ??
                 "Account Number (Optional)"
               }
               error={formErrors.accountNumber}
@@ -209,7 +208,7 @@ export default function () {
             <InputBox
               name="ifscCode"
               label="IFSC Code"
-              placeholder={vendorInfo.ifscCode ?? "IFSC Code (Optional)"}
+              placeholder={ "IFSC Code (Optional)"}
               error={formErrors.ifscCode}
               value={vendorInfo.ifscCode ?? ""}
             />
@@ -223,7 +222,7 @@ export default function () {
               <textarea
                 name="address"
                 className="h-[98px] resize-none w-[338px] border-[1px] border-[#D1D5DB] placeholder:align-top pt-2   rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
-                placeholder={vendorInfo.address ?? "Address (Optional)"}
+                placeholder={"Address (Optional)"}
                 defaultValue={vendorInfo.address ?? ""}
               />
             </div>
@@ -237,7 +236,7 @@ export default function () {
               <textarea
                 name="remarks"
                 className="h-[98px] resize-none w-[338px] border-[1px] border-[#D1D5DB] placeholder:align-top pt-2   rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
-                placeholder={vendorInfo.remarks ?? ""}
+                placeholder={ "Remarks (Optional)"}
                 defaultValue={vendorInfo.remarks ?? ""}
               />
             </div>

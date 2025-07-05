@@ -1,10 +1,9 @@
 "use client";
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
-import Delete from "@/components/ui/Delete";
 import { useEffect, useState } from "react";
 import { useVendors } from "@/lib/api/useVendors";
-import { useDeleteVendor } from "@/lib/api/deleteVendor";
+import { useDeleteVendor } from "@/lib/api/useDeleteVendor";
 export default function () {
   type Vendor = {
     id: number;
@@ -18,7 +17,7 @@ export default function () {
   useEffect(() => setMounted(true), []);
   const handleDelete = (id: number) => {
     deleteVendor.mutate(id);
-    window.location.reload();
+    // window.location.reload();
   };
 
   const { data, isLoading, error } = useVendors();
@@ -26,8 +25,6 @@ export default function () {
   if (!mounted) return null;
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading Vendors.</div>;
-
-  // If your API returns { machines: [...] }, use data?.machines || []
 
   console.log(data);
   return (

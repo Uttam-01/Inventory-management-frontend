@@ -3,7 +3,7 @@ import { authRequest } from "./auth";
 import { useMutation } from "@tanstack/react-query";
 import { API_ROUTES } from "../constants/apiRoutes";
 import { Vendor } from "../schemas";
-export const updateVendors = () => {
+export const useUpdateVendors = () => {
   return useMutation({
     mutationFn: (temp : {reqData: Vendor, id : number}) => apiReq(temp),
     onSuccess: (data) => {

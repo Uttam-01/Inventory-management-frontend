@@ -1,5 +1,5 @@
 "use client";
-import { useAddVendors } from "@/lib/api/addVendors";
+import { useAddVendors } from "@/lib/api/useAddVendors";
 import { vendorSchema } from "@/lib/schemas";
 import { useState } from "react";
 import InputBox from "./InputBox";

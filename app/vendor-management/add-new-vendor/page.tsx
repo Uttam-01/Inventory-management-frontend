@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useAddVendors } from "@/lib/api/addVendors";
+import { useAddVendors } from "@/lib/api/useAddVendors";
 import { vendorSchema } from "@/lib/schemas";
 import Link from "next/link";
 import { useState } from "react";
@@ -132,42 +132,42 @@ if (addVendorMutation.isError) return <div>Error saving vendor.</div>;
 
               name="panNumber"
               label="Pan Number"
-              placeholder="Pan Number"
+              placeholder="Pan Number (Optional)"
               error={formErrors.panNumber}
             />
             <InputBox
               
               name="aadhaarNumber"
               label="Aadhaar Number"
-              placeholder="Aadhaar Number"
+              placeholder="Aadhaar Number (Optional)"
               error={formErrors.aadhaarNumber}
             />
             <InputBox
 
               name="bankName"
               label="Bank Name"
-              placeholder="Bank Name"
+              placeholder="Bank Name (Optional)"
               error={formErrors.bankName}
             />
             <InputBox
 
               name="accountHolderName"
               label="Account Holder Name"
-              placeholder="Account Holder Name"
+              placeholder="Account Holder Name (Optional)"
               error={formErrors.accountHolderName}
             />
             <InputBox
               
               name="accountNumber"
               label="Account Number"
-              placeholder="Account Number"
+              placeholder="Account Number (Optional)"
               error={formErrors.accountNumber}
             />
             <InputBox
 
               name="ifscCode"
               label="IFSC Code"
-              placeholder="IFSC Code"
+              placeholder="IFSC Code (Optional)"
               error={formErrors.ifscCode}
             />
             <div className="relative flex flex-col">
