@@ -99,7 +99,7 @@ export default function () {
           <div className="w-[16.6%] flex justify-center">{machine.modelNumber}</div>
           <div className="w-[16.6%] flex justify-center">{machine.associateSpareCount}</div>
           <div className="w-[16.6%] flex justify-center items-center gap-4">
-            <Edit to="/" />
+            <Edit to={`/machine-list/edit-machine/${machine.id}`} />
             <Delete to="/"></Delete>
           </div>
         </div>

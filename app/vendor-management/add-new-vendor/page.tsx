@@ -3,6 +3,7 @@
 
 import { useAddVendors } from "@/lib/api/addVendors";
 import { vendorSchema } from "@/lib/schemas";
+import Link from "next/link";
 import { useState } from "react";
 
 function InputBox(e: {
@@ -199,13 +200,13 @@ if (addVendorMutation.isError) return <div>Error saving vendor.</div>;
         </div>
 
         <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
-          <button
-            type="button"
+          <Link
+            href={"/vendor-management"}
             className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
           >
             Cancel
-          </button>
-          <button className=" h-[42px]  rounded-[8px] w-[154px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
+          </Link>
+          <button className=" h-[42px] hover:cursor-pointer rounded-[8px] w-[154px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
             {addVendorMutation.isPending ? "Saving..." : "Save Vendor"}
           </button>
         </div>
