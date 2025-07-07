@@ -1,24 +1,24 @@
 "use client";
 import React from "react";
 
-interface InputBoxProps {
+interface FormTextAreaProps {
   label: string;
   placeholder: string;
   name: string;
   error?: string;
-  value?: any;
+  value?: string;
 }
 
-export default function InputBox({ label, placeholder, name, error, value }: InputBoxProps) {
+export default function FormTextArea({ label, placeholder, name, error, value }: FormTextAreaProps) {
   return (
     <div className="relative flex flex-col">
       <label htmlFor={name} className="text-[#343A40] text-[14px] font-normal">
         {label}
       </label>
-      <input
-        className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB] rounded-[6px] px-3 shadow-[...]"
-        placeholder={placeholder}
+      <textarea
         name={name}
+        placeholder={placeholder}
+        className="h-[98px] resize-none w-[338px] border border-[#D1D5DB] pt-2 px-3 rounded-[6px] shadow-[...]"
         defaultValue={value ?? ""}
       />
       {error && <span className="text-red-500 text-xs">{error}</span>}

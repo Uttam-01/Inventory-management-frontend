@@ -2,15 +2,21 @@
 import Delete from "@/components/ui/Delete";
 import AddButton from "@/components/ui/Add";
 import { useEffect, useState } from "react";
-import { useAddMachines } from "@/lib/api/useAddMachines";
+import { useUpdateMachine } from "@/lib/api/machineApi/useUpdateMachine";
 import { machineSchema } from "@/lib/schemas";
 import { useComponents } from "@/lib/api/useComponents";
 import { Machine } from "@/lib/schemas";
 import { authRequest } from "@/lib/api/auth";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
-function InputBox(e: { placeholder: string; name: string; error?: string ; defaultValue: string}) {
+function InputBox(e: {
+  placeholder: string;
+  name: string;
+  error?: string;
+  defaultValue: string;
+}) {
   return (
     <div className="flex flex-col">
       <input
@@ -25,44 +31,44 @@ function InputBox(e: { placeholder: string; name: string; error?: string ; defau
   );
 }
 
-function AddNewMachine() {
-    const [machineInfo, setMachineInfo] = useState<Machine>();
-    const [reqComponents, setReqComponents] = useState<
-    { name: string; quantityRequired: number; componentId: number }[]
+export default function () {
+  const router = useRouter();
+  const [machineInfo, setMachineInfo] = useState<Machine>();
+  const [reqComponents, setReqComponents] = useState<
+    { componentName: string; quantityRequired: number; componentId: number }[]
   >([]);
-    const pathname = usePathname();
-    useEffect(() => {
-      const getInfo = async () => {
-        const pathParts = pathname.split("/").filter(Boolean);
-        const machineId = pathParts[pathParts.length - 1];
-  
-        try {
-          const data = await authRequest({
-            url: `${API_ROUTES.MACHINES}/${machineId}`,
-            method: "GET",
-          });
-  
-          console.log("Fetched Machine info:", data);
-          setMachineInfo(data);
-         
-        } catch (err) {
-          console.error("Failed to fetch Machine info:", err);
-        }
-      };
+  const pathname = usePathname();
 
-      if (pathname) {
-        getInfo();
+  useEffect(() => {
+    const getInfo = async () => {
+      const pathParts = pathname.split("/").filter(Boolean);
+      const machineId = pathParts[pathParts.length - 1];
+
+      try {
+        const data = await authRequest({
+          url: `${API_ROUTES.MACHINES}/${machineId}`,
+          method: "GET",
+        });
+
+        console.log("Fetched Machine info:", data);
+        setMachineInfo(data);
+        setReqComponents(data.components);
+      } catch (err) {
+        console.error("Failed to fetch Machine info:", err);
       }
-    }, [pathname]);
+    };
 
+    if (pathname) {
+      getInfo();
+    }
+  }, [pathname]);
 
   const [quantity, setQuantity] = useState<number>(0);
   const [components, setComponents] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  
-  
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -70,21 +76,24 @@ function AddNewMachine() {
   useEffect(() => {
     if (data) setComponents(data);
   }, [data]);
-  
-    
-  
-     
-      
-  
 
   const filteredComponents = components.filter((component) =>
     component.name.toLowerCase().includes(search.toLowerCase())
   );
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const addMachineMutation = useAddMachines();
+  const updateMachineMutation = useUpdateMachine();
 
-  if (addMachineMutation.isSuccess) return <div>Machine Added!</div>;
-  if (addMachineMutation.isError) return <div>Error adding machine.</div>;
+  useEffect(() => {
+    if (updateMachineMutation.isSuccess) {
+      const timeout = setTimeout(() => {
+        router.push("/machine-list");
+      }, 1000);
+
+      return () => clearTimeout(timeout); 
+    }
+  }, [updateMachineMutation.isSuccess]);
+
+  if (updateMachineMutation.isError) return <div>Error Updating machine.</div>;
 
   const formSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -102,18 +111,24 @@ function AddNewMachine() {
       console.log(errors);
       return;
     }
+    const pathParts = pathname.split("/").filter(Boolean);
+    const machineId = pathParts[pathParts.length - 1];
+    const temp = {
+      reqData: result.data,
+      id: Number(machineId),
+    };
 
     setFormErrors({});
-    addMachineMutation.mutate(result.data);
+    updateMachineMutation.mutate(temp);
   };
 
   return (
     <div className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]">
       <div className="text-[#0F4C81] font-bold text-[20px]">
-        Add New Machine
+        Edit Machine Details
       </div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 text-[14px] font-normal  font-emoji h-[94px] items-center">
-        Define the machine details and specify the materials required for its
+        Edit the machine details and specify the materials required for its
         maintenance or assembly. This list helps in forecasting inventory
         availability and does not impact actual stock levels.
       </div>
@@ -123,27 +138,56 @@ function AddNewMachine() {
         </div>
         <form onSubmit={formSubmit}>
           <div className="flex flex-wrap gap-x-6 gap-y-3 mt-[10px]">
-
-            <InputBox name="name" placeholder="Machine Name" error={formErrors.name} defaultValue={machineInfo?.name ?? ""}  />
-            <InputBox name="machineCategory" placeholder="Machine Category" error={formErrors.machineCategory} defaultValue={machineInfo?.machineCategory ?? ""} />
-            <InputBox name="model" placeholder="Model" error={formErrors.model} defaultValue={machineInfo?.model ?? ""} />
-            <InputBox name="modelNumber" placeholder="Model No." error={formErrors.modelNumber} defaultValue={machineInfo?.modelNumber ?? ""} />
-            <InputBox name="weight" placeholder="Weight" error={formErrors.weight} defaultValue={machineInfo?.weight?.toString() ?? ""} />
-            <InputBox name="price" placeholder="Price" error={formErrors.price} defaultValue={machineInfo?.price.toString() ?? ""} />
+            <InputBox
+              name="name"
+              placeholder="Machine Name"
+              error={formErrors.name}
+              defaultValue={machineInfo?.name ?? ""}
+            />
+            <InputBox
+              name="machineCategory"
+              placeholder="Machine Category"
+              error={formErrors.machineCategory}
+              defaultValue={machineInfo?.machineCategory ?? ""}
+            />
+            <InputBox
+              name="model"
+              placeholder="Model"
+              error={formErrors.model}
+              defaultValue={machineInfo?.model ?? ""}
+            />
+            <InputBox
+              name="modelNumber"
+              placeholder="Model No."
+              error={formErrors.modelNumber}
+              defaultValue={machineInfo?.modelNumber ?? ""}
+            />
+            <InputBox
+              name="weight"
+              placeholder="Weight"
+              error={formErrors.weight}
+              defaultValue={machineInfo?.weight?.toString() ?? ""}
+            />
+            <InputBox
+              name="price"
+              placeholder="Price"
+              error={formErrors.price}
+              defaultValue={machineInfo?.price.toString() ?? ""}
+            />
             <div className="flex flex-col w-full">
               <input
-              className="h-[50px] w-full border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
-              type="text"
-              placeholder="Description"
-              name="description"
-              defaultValue={machineInfo?.description ?? ""}
-
-            />
+                className="h-[50px] w-full border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
+                type="text"
+                placeholder="Description"
+                name="description"
+                defaultValue={machineInfo?.description ?? ""}
+              />
               {formErrors.description && (
-                <span className="text-red-500 text-xs">{formErrors.description}</span>
+                <span className="text-red-500 text-xs">
+                  {formErrors.description}
+                </span>
               )}
             </div>
-            
           </div>
 
           <div className="text-[#1F2937] text-[16px] font-semibold mt-6">
@@ -154,7 +198,7 @@ function AddNewMachine() {
             {reqComponents.map(
               (
                 component: {
-                  name: string;
+                  componentName: string;
                   quantityRequired: number;
                   componentId: number;
                 },
@@ -166,14 +210,14 @@ function AddNewMachine() {
                       className="h-[25px] text-[16px] flex justify-center items-center px-3 bg-[#DBEAFE] rounded-4"
                       key={i}
                     >
-                      <p>{component.name}</p>
+                      <p>{component.componentName}</p>
                       <p className="ml-1">({component.quantityRequired})</p>
                       <svg
                         className="ml-4 h-[10px] hover:cursor-pointer"
                         onClick={() =>
                           setReqComponents((prev) =>
                             prev.filter(
-                              (component) => component.name !== selected.name
+                              (c) => component.componentName !== c.componentName
                             )
                           )
                         }
@@ -276,29 +320,30 @@ function AddNewMachine() {
             </div>
             <div className="flex flex-col justify-end">
               <input
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="h-[50px] w-[200px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
-              type="number"
-              placeholder="Quantity Required"
-            />
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="h-[50px] w-[200px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
+                type="number"
+                placeholder="Quantity Required"
+              />
             </div>
-            
-            <button type="button"
+
+            <button
+              type="button"
               onClick={() => {
                 if (
+                  selected != null &&
                   selected.name != null &&
                   selected.name != "" &&
                   quantity != null &&
                   quantity != 0
                 ) {
                   const temp = reqComponents.find(
-                    (comp) => comp.name === selected.name
+                    (comp) => comp.componentName === selected.name
                   );
                   if (temp) {
-                  
                     setReqComponents((prev) =>
                       prev.map((comp) =>
-                        comp.name === selected.name
+                        comp.componentName === selected.name
                           ? {
                               ...comp,
                               quantityRequired: Math.max(
@@ -309,8 +354,6 @@ function AddNewMachine() {
                           : comp
                       )
                     );
-                    
-
                   }
                 }
               }}
@@ -343,25 +386,27 @@ function AddNewMachine() {
             </button>
           </div>
           {formErrors.components && (
-                <span className="text-red-500 text-xs">{formErrors.components}</span>
+            <span className="text-red-500 text-xs">
+              {formErrors.components}
+            </span>
           )}
           {/* add material button */}
           <div
             onClick={() => {
               if (
-                selected!=null &&
+                selected != null &&
                 selected.name != null &&
                 selected.name != "" &&
                 quantity != null &&
                 quantity != 0
               ) {
                 const temp = reqComponents.find(
-                  (comp) => comp.name === selected.name
+                  (comp) => comp.componentName === selected.name
                 );
                 if (temp) {
                   setReqComponents((prev) =>
                     prev.map((comp) =>
-                      comp.name === selected.name
+                      comp.componentName === selected.name
                         ? {
                             ...comp,
                             quantityRequired: comp.quantityRequired + quantity,
@@ -373,7 +418,7 @@ function AddNewMachine() {
                   setReqComponents((prev) => [
                     ...prev,
                     {
-                      name: selected.name,
+                      componentName: selected.name,
                       quantityRequired: quantity,
                       componentId: selected.id,
                     },
@@ -402,13 +447,17 @@ function AddNewMachine() {
               Add Material
             </button>
           </div>
-          <div className="mt-[25px]">
+          <div className="mt-[25px] w-full flex justify-between">
+            {updateMachineMutation.isSuccess && (
+              <div className="text-green-600 w-full">Updated Machine Successfully</div>
+            )}
+
             <div className="w-full flex h-[42px] items-center justify-end gap-4">
-              <div className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center">
+              <Link href={"/machine-list"} className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center">
                 Cancel
-              </div>
+              </Link>
               <button className=" hover:cursor-pointer h-[42px]  rounded-[8px] w-[124px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-                {addMachineMutation.isPending ? "adding..." : "Add Machine"}
+                {updateMachineMutation.isPending ? "adding..." : "Add Machine"}
               </button>
             </div>
           </div>
@@ -417,5 +466,3 @@ function AddNewMachine() {
     </div>
   );
 }
-
-export default AddNewMachine;

@@ -1,9 +1,9 @@
 "use client"
-import { authRequest } from "./auth";
+import { authRequest } from "../auth";
 import { useMutation } from "@tanstack/react-query";
-import { API_ROUTES } from "../constants/apiRoutes";
-import { Machine } from "../schemas";
-export const useUpdateMachines = () => {
+import { API_ROUTES } from "../../constants/apiRoutes";
+import { Machine } from "../../schemas";
+export const useUpdateMachine = () => {
   return useMutation({
     mutationFn: (temp : {reqData: Machine, id : number}) => apiReq(temp),
     onSuccess: (data) => {
@@ -21,6 +21,6 @@ export const useUpdateMachines = () => {
 
 async function apiReq(temp : {reqData: Machine, id : number}) {
     console.log("in api req" , temp.reqData)
-  return authRequest({ url: `${API_ROUTES.VENDOR}/${temp.id}`, method: "PUT" , data : temp.reqData});
+  return authRequest({ url: `${API_ROUTES.MACHINES}/${temp.id}`, method: "PUT" , data : temp.reqData});
   
 }

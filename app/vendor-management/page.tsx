@@ -2,8 +2,8 @@
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import { useEffect, useState } from "react";
-import { useVendors } from "@/lib/api/useVendors";
-import { useDeleteVendor } from "@/lib/api/useDeleteVendor";
+import { useVendors } from "@/lib/api/vendorApi/useVendors";
+import { useDeleteVendor } from "@/lib/api/vendorApi/useDeleteVendor";
 export default function () {
   type Vendor = {
     id: number;
@@ -16,8 +16,9 @@ export default function () {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const handleDelete = (id: number) => {
-    deleteVendor.mutate(id);
-    // window.location.reload();
+   deleteVendor.mutateAsync(id)
+    .then(() => window.location.reload())
+    .catch(err => console.error("Error deleting Vendor:", err));
   };
 
   const { data, isLoading, error } = useVendors();

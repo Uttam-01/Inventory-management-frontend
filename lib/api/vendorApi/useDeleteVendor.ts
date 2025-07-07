@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { authRequest } from "./auth"; // your custom request function
-import { API_ROUTES } from "../constants/apiRoutes";
+import { authRequest } from "../auth"; // your custom request function
+import { API_ROUTES } from "../../constants/apiRoutes";
 
 export const useDeleteVendor = () => {
   return useMutation({

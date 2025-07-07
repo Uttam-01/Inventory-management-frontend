@@ -1,7 +1,7 @@
 "use client"
-import { authRequest } from "./auth";
+import { authRequest } from "../auth";
 import { useQuery } from "@tanstack/react-query";
-import { API_ROUTES } from "../constants/apiRoutes";
+import { API_ROUTES } from "../../constants/apiRoutes";
 import axios from "axios";
 export const useVendors = () => {
   return useQuery({

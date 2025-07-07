@@ -2,9 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useComponents } from "@/lib/api/useComponents";
-import { useAddVendorComponent } from "@/lib/api/vendor-componentApi/useAddVendorComponent";
+import { useUpdateVendorComponent } from "@/lib/api/vendor-componentApi/useUpdateVendorComponent";
 import { VendorComponent, vendorComponentSchema } from "@/lib/schemas";
 import { useVendors } from "@/lib/api/vendorApi/useVendors";
+import { authRequest } from "@/lib/api/auth";
+import { usePathname } from "next/navigation";
+import { API_ROUTES } from "@/lib/constants/apiRoutes";
 
 function InputBox(e: {
   label: string;
@@ -33,6 +36,8 @@ function InputBox(e: {
 }
 
 export default function () {
+  const pathname = usePathname()
+  const [vendorCompoennt,setVendorComponent] = useState<any>();
   const [components, setComponents] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
@@ -68,7 +73,7 @@ export default function () {
   const filteredVendors = vendors.filter((vendor) =>
     vendor.name.toLowerCase().includes(searchVendor.toLowerCase())
   );
-  const addVendorComponent = useAddVendorComponent();
+  const updateVendorComponentMutation = useUpdateVendorComponent();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -83,14 +88,14 @@ export default function () {
     }
     console.log("aeacf", price);
 
-    const reqData = {
+    const requestData = {
       componentId: selected.id,
       vendorId: selectedVendor.id,
       unitPrice: Number(price),
       deliveryTimeInDays: delTime,
     };
 
-    const result = vendorComponentSchema.safeParse(reqData);
+    const result = vendorComponentSchema.safeParse(requestData);
     if (!result.success) {
       const errors: { [key: string]: string } = {};
       result.error.errors.forEach((err) => {
@@ -100,14 +105,45 @@ export default function () {
       console.log(errors);
       return;
     }
+    const Id = pathname.split("/").filter(Boolean).pop();
+    if (!Id) return;
+
 
     setFormErrors({});
-    addVendorComponent.mutate(result.data);
+    updateVendorComponentMutation.mutate({reqData  : result.data , id : Number(Id) });
   }
+  useEffect(() => {
+      const getInfo = async () => {
+        const pathParts = pathname.split("/").filter(Boolean);
+        const vendorCompId = pathParts[pathParts.length - 1];
+  
+        try {
+          const data = await authRequest({
+            url: `${API_ROUTES.VENDOR_COMPONENT}/${vendorCompId}`,
+            method: "GET",
+          });
+  
+          console.log("Fetched Machine info:", data);
+          setVendorComponent(data);
+          setSelected({id:data.componentId, name : data.componentName})
+          setSelectedVendor({id:data.vendorId, name : data.vendorName})
+          setPrice(data.unitPrice)
+          setDelTime(data.deliveryTimeInDays)
+          
+        } catch (err) {
+          console.error("Failed to fetch Machine info:", err);
+        }
+      };
+  
+      if (pathname) {
+        getInfo();
+      }
+    }, [pathname]);
+  
 
-  if (addVendorComponent.isSuccess) return <p>Saved successfully!</p>;
-  if (addVendorComponent.isError){
-    console.log("->>>>" , addVendorComponent.error)
+  if (updateVendorComponentMutation.isSuccess) return <p>Saved successfully!</p>;
+  if (updateVendorComponentMutation.isError){
+    console.log("->>>>" , updateVendorComponentMutation.error)
     return <p>This component is already assigned to the vendor.</p>;
   } 
 
@@ -277,6 +313,7 @@ export default function () {
                 Per Unit Price
               </label>
               <input
+                defaultValue={price}
                 name="unotPrice"
                 className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
                 type="text"
@@ -297,6 +334,7 @@ export default function () {
                 Delivery time (In Days)
               </label>
               <input
+                defaultValue={delTime}
                 name="delTime"
                 className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
                 type="text"
