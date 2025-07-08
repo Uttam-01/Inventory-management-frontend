@@ -9,8 +9,8 @@ function Navbar() {
               Store Manager
             </div>
             <SidebarOption to={"/dashboard"} name="Dashboard"/>
-            <SidebarOption to={"/machine-list"} name="Machine Management"/>
-            <SidebarOption to={"/component-master"} name="Material Management"/>
+            <SidebarOption to={"/machine-management"} name="Machine Management"/>
+            <SidebarOption to={"/component-management"} name="Component Management"/>
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
             <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
             <SidebarOption to={"/work-order-master/add-new-workorder"} name="Work Order Add/Exit"/>
@@ -18,8 +18,6 @@ function Navbar() {
             <SidebarOption to={"/material-out"} name="Material OUT"/>
             <SidebarOption to={"/allotted-material"} name="Allotted Material"/>
             <SidebarOption to={"/cancelled-allocated-material"} name="Cancelled Allocated Material"/>
-          
-
           </div>
   );
 }

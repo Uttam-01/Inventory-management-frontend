@@ -7,5 +7,5 @@ export const API_ROUTES = {
   REFRESH: `${baseUrl}auth/refresh`,
   COMPONENT: `${baseUrl}component`,
   VENDOR_COMPONENT: `${baseUrl}vendor-components`,
-  
+  INVENTORY: `${baseUrl}inventory`,
 };

@@ -1,15 +1,14 @@
 "use client";
-import Delete from "@/components/ui/Delete";
-import AddButton from "@/components/ui/Add";
-import { useEffect, useState } from "react";
-import { useUpdateMachine } from "@/lib/api/machineApi/useUpdateMachine";
+import { useEffect, useReducer, useState } from "react";
+import { useAddMachines } from "@/lib/api/machineApi/useAddMachines";
 import { machineSchema } from "@/lib/schemas";
-import { useComponents } from "@/lib/api/useComponents";
+import { useComponents } from "@/lib/api/componentApi/useComponents";
 import { Machine } from "@/lib/schemas";
 import { authRequest } from "@/lib/api/auth";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function InputBox(e: {
   placeholder: string;
@@ -31,37 +30,12 @@ function InputBox(e: {
   );
 }
 
-export default function () {
+function AddNewMachine() {
   const router = useRouter();
   const [machineInfo, setMachineInfo] = useState<Machine>();
   const [reqComponents, setReqComponents] = useState<
-    { componentName: string; quantityRequired: number; componentId: number }[]
+    { name: string; quantityRequired: number; componentId: number }[]
   >([]);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const getInfo = async () => {
-      const pathParts = pathname.split("/").filter(Boolean);
-      const machineId = pathParts[pathParts.length - 1];
-
-      try {
-        const data = await authRequest({
-          url: `${API_ROUTES.MACHINES}/${machineId}`,
-          method: "GET",
-        });
-
-        console.log("Fetched Machine info:", data);
-        setMachineInfo(data);
-        setReqComponents(data.components);
-      } catch (err) {
-        console.error("Failed to fetch Machine info:", err);
-      }
-    };
-
-    if (pathname) {
-      getInfo();
-    }
-  }, [pathname]);
 
   const [quantity, setQuantity] = useState<number>(0);
   const [components, setComponents] = useState<any[]>([]);
@@ -81,19 +55,16 @@ export default function () {
     component.name.toLowerCase().includes(search.toLowerCase())
   );
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const updateMachineMutation = useUpdateMachine();
-
+  const addMachineMutation = useAddMachines();
   useEffect(() => {
-    if (updateMachineMutation.isSuccess) {
+    if (addMachineMutation.isSuccess) {
       const timeout = setTimeout(() => {
-        router.push("/machine-list");
+        router.push("/machine-management");
       }, 1000);
 
-      return () => clearTimeout(timeout); 
+      return () => clearTimeout(timeout); // Cleanup if component unmounts
     }
-  }, [updateMachineMutation.isSuccess]);
-
-  if (updateMachineMutation.isError) return <div>Error Updating machine.</div>;
+  }, [addMachineMutation.isSuccess]);
 
   const formSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -111,24 +82,18 @@ export default function () {
       console.log(errors);
       return;
     }
-    const pathParts = pathname.split("/").filter(Boolean);
-    const machineId = pathParts[pathParts.length - 1];
-    const temp = {
-      reqData: result.data,
-      id: Number(machineId),
-    };
 
     setFormErrors({});
-    updateMachineMutation.mutate(temp);
+    addMachineMutation.mutate(result.data);
   };
 
   return (
     <div className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]">
       <div className="text-[#0F4C81] font-bold text-[20px]">
-        Edit Machine Details
+        Add New Machine
       </div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 text-[14px] font-normal  font-emoji h-[94px] items-center">
-        Edit the machine details and specify the materials required for its
+        Define the machine details and specify the materials required for its
         maintenance or assembly. This list helps in forecasting inventory
         availability and does not impact actual stock levels.
       </div>
@@ -189,7 +154,6 @@ export default function () {
               )}
             </div>
           </div>
-
           <div className="text-[#1F2937] text-[16px] font-semibold mt-6">
             Required Spare Parts
           </div>
@@ -198,7 +162,7 @@ export default function () {
             {reqComponents.map(
               (
                 component: {
-                  componentName: string;
+                  name: string;
                   quantityRequired: number;
                   componentId: number;
                 },
@@ -210,14 +174,14 @@ export default function () {
                       className="h-[25px] text-[16px] flex justify-center items-center px-3 bg-[#DBEAFE] rounded-4"
                       key={i}
                     >
-                      <p>{component.componentName}</p>
+                      <p>{component.name}</p>
                       <p className="ml-1">({component.quantityRequired})</p>
                       <svg
                         className="ml-4 h-[10px] hover:cursor-pointer"
                         onClick={() =>
                           setReqComponents((prev) =>
                             prev.filter(
-                              (c) => component.componentName !== c.componentName
+                              (component) => component.name !== selected.name
                             )
                           )
                         }
@@ -331,19 +295,18 @@ export default function () {
               type="button"
               onClick={() => {
                 if (
-                  selected != null &&
                   selected.name != null &&
                   selected.name != "" &&
                   quantity != null &&
                   quantity != 0
                 ) {
                   const temp = reqComponents.find(
-                    (comp) => comp.componentName === selected.name
+                    (comp) => comp.name === selected.name
                   );
                   if (temp) {
                     setReqComponents((prev) =>
                       prev.map((comp) =>
-                        comp.componentName === selected.name
+                        comp.name === selected.name
                           ? {
                               ...comp,
                               quantityRequired: Math.max(
@@ -401,12 +364,12 @@ export default function () {
                 quantity != 0
               ) {
                 const temp = reqComponents.find(
-                  (comp) => comp.componentName === selected.name
+                  (comp) => comp.name === selected.name
                 );
                 if (temp) {
                   setReqComponents((prev) =>
                     prev.map((comp) =>
-                      comp.componentName === selected.name
+                      comp.name === selected.name
                         ? {
                             ...comp,
                             quantityRequired: comp.quantityRequired + quantity,
@@ -418,7 +381,7 @@ export default function () {
                   setReqComponents((prev) => [
                     ...prev,
                     {
-                      componentName: selected.name,
+                      name: selected.name,
                       quantityRequired: quantity,
                       componentId: selected.id,
                     },
@@ -447,17 +410,22 @@ export default function () {
               Add Material
             </button>
           </div>
-          <div className="mt-[25px] w-full flex justify-between">
-            {updateMachineMutation.isSuccess && (
-              <div className="text-green-600 w-full">Updated Machine Successfully</div>
+          <div className="mt-[25px] flex justify-between w-full">
+            {addMachineMutation.isSuccess && (
+              <div className="text-green-600 w-full">
+                Added Machine Successfully.
+              </div>
             )}
-
+            {addMachineMutation.isError && <div>Error adding machine.</div>}
             <div className="w-full flex h-[42px] items-center justify-end gap-4">
-              <Link href={"/machine-list"} className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center">
+              <Link
+                href={"/machine-list"}
+                className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
+              >
                 Cancel
               </Link>
               <button className=" hover:cursor-pointer h-[42px]  rounded-[8px] w-[124px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-                {updateMachineMutation.isPending ? "adding..." : "Add Machine"}
+                {addMachineMutation.isPending ? "adding..." : "Add Machine"}
               </button>
             </div>
           </div>
@@ -466,3 +434,5 @@ export default function () {
     </div>
   );
 }
+
+export default AddNewMachine;

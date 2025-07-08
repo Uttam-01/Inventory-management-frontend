@@ -1,4 +1,9 @@
-
+"use client";
+import SearchDropdown from "@/components/layout/searchDropdown";
+import { useComponents } from "@/lib/api/componentApi/useComponents";
+import { useInventory } from "@/lib/api/inventoryApi/useInventory";
+import { useVendors } from "@/lib/api/vendorApi/useVendors";
+import { useEffect, useState } from "react";
 
 function InputBox(e: { label: string; placeholder: string }) {
   return (
@@ -16,6 +21,46 @@ function InputBox(e: { label: string; placeholder: string }) {
 }
 
 export default function () {
+  const [mounted, setMounted] = useState(false);
+  const [components, setComponents] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<any>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [vendors, setVendors] = useState<any[]>([]);
+  const [searchVendor, setSearchVendor] = useState("");
+  const [selectedVendor, setSelectedVendor] = useState<any>(null);
+  const [VendorOpen, setVendorOpen] = useState<boolean>(false);
+  const [vendorMounted, setvendorMounted] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => setMounted(true), []);
+  useEffect(() => setvendorMounted(true), []);
+
+  const {
+    data: Components,
+    isLoading: isComponentLoading,
+    error: componentError,
+  } = useComponents();
+  const {
+    data: Vendors,
+    isLoading: isVendorLoading,
+    error: vendorError,
+  } = useVendors();
+
+  useEffect(() => {
+    if (Components) setComponents(Components);
+  }, [Components]);
+
+  useEffect(() => {
+    if (Vendors) setVendors(Vendors);
+  }, [Vendors]);
+
+  useEffect(() => setMounted(true), []);
+  const { data, isLoading, error } = useInventory();
+  if (!mounted) return null;
+  else if (isLoading) return <div>Loading.....</div>;
+  else if (error) return <div>Error loading components.</div>;
+  console.log(data);
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">Material IN</div>
@@ -27,46 +72,28 @@ export default function () {
           Record New Material Entry
         </div>
         <form action="" className="flex flex-wrap gap-y-3 justify-between">
-          <InputBox label="Product Selection" placeholder="" />
+          <SearchDropdown
+            label="Component"
+            placeholder="Select Component"
+            data={Components}
+            selected={selected}
+            onSelect={setSelected}
+            isLoading={isComponentLoading}
+            error={!!componentError}
+            formError={formErrors.componentId}
+          />
           <InputBox label="Recieving Date" placeholder="" />
           <InputBox label="Bill No" placeholder="" />
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
-              Vendor Name
-            </label>
-            <input
-              type="text"
-              placeholder="0"
-              className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
-            />
-            <div className="flex gap-2 items-center justify-start">
-              <svg
-                width="15"
-                height="14"
-                viewBox="0 0 15 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g clipPath="url(#clip0_15_688)">
-                  <path
-                    d="M7.24219 0.21875C3.49609 0.21875 0.460938 3.25391 0.460938 7C0.460938 10.7461 3.49609 13.7812 7.24219 13.7812C10.9883 13.7812 14.0234 10.7461 14.0234 7C14.0234 3.25391 10.9883 0.21875 7.24219 0.21875ZM11.1797 7.76562C11.1797 7.94609 11.032 8.09375 10.8516 8.09375H8.33594V10.6094C8.33594 10.7898 8.18828 10.9375 8.00781 10.9375H6.47656C6.29609 10.9375 6.14844 10.7898 6.14844 10.6094V8.09375H3.63281C3.45234 8.09375 3.30469 7.94609 3.30469 7.76562V6.23438C3.30469 6.05391 3.45234 5.90625 3.63281 5.90625H6.14844V3.39062C6.14844 3.21016 6.29609 3.0625 6.47656 3.0625H8.00781C8.18828 3.0625 8.33594 3.21016 8.33594 3.39062V5.90625H10.8516C11.032 5.90625 11.1797 6.05391 11.1797 6.23438V7.76562Z"
-                    fill="#2563EB"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_15_688">
-                    <rect
-                      width="14"
-                      height="14"
-                      fill="white"
-                      transform="translate(0.242188)"
-                    />
-                  </clipPath>
-                </defs>
-              </svg>
-              Add New Vendor
-            </div>
-          </div>
+          <SearchDropdown
+            label="Vendor"
+            placeholder="Select Vendor"
+            data={Vendors}
+            selected={selectedVendor}
+            onSelect={setSelectedVendor}
+            isLoading={isVendorLoading}
+            error={!!vendorError}
+            formError={formErrors.vendorId}
+          />
           <InputBox label="Quantity" placeholder="0" />
           <InputBox label="Unit Price" placeholder="0" />
           <InputBox label="GST %" placeholder="0" />

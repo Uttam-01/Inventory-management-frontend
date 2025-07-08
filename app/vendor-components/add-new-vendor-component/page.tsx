@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useComponents } from "@/lib/api/useComponents";
+import { useComponents } from "@/lib/api/componentApi/useComponents";
 import { useAddVendorComponent } from "@/lib/api/vendor-componentApi/useAddVendorComponent";
 import { VendorComponent, vendorComponentSchema } from "@/lib/schemas";
 import { useVendors } from "@/lib/api/vendorApi/useVendors";
