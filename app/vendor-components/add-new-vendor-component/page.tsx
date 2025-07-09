@@ -63,7 +63,7 @@ export default function () {
   }, [Vendors]);
 
   const filteredComponents = components.filter((component) =>
-    component.name.toLowerCase().includes(search.toLowerCase())
+    component.displayName.toLowerCase().includes(search.toLowerCase())
   );
   const filteredVendors = vendors.filter((vendor) =>
     vendor.name.toLowerCase().includes(searchVendor.toLowerCase())
@@ -131,7 +131,7 @@ export default function () {
                 onClick={() => setIsOpen(isOpen ? false : true)}
                 className="h-[50px] w-full border-[1px] border-[#D1D5DB] flex items-center justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
               >
-                {selected ? selected.name : "Component Name"}
+                {selected ? selected.displayName : "Component Name"}
                 <svg
                   width="25"
                   height="24"
@@ -189,7 +189,7 @@ export default function () {
                             setIsOpen(false);
                           }}
                         >
-                          {component.name}
+                          {component.displayName}
                         </li>
                       ))}
                     </ul>

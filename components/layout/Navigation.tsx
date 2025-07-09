@@ -20,7 +20,9 @@ export default function Navigtaion() {
                     <div className="text-[#6B7280] text-[14px] font-normal font-emoji">
                         User ID: SM_001
                     </div>
-                    <button
+                    <Link
+                        href={"/auth/login"}
+
                         className="bg-[#343A40] h-[32px] w-[36.61px] rounded-[9999px] flex items-center justify-center"
                         type="button"
                     >
@@ -36,7 +38,7 @@ export default function Navigtaion() {
                                 fill="white"
                             />
                         </svg>
-                    </button>
+                    </Link>
                 </div>
             </div>
       

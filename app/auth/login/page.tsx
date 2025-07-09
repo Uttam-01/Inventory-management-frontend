@@ -2,9 +2,13 @@
 import { useState } from "react";
 import { Login } from "@/lib/api/login";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/useAuthStore";
+
 
 export default function () {
   const router = useRouter();
+  const setRole = useAuthStore((state) => state.setRole);
+  
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -18,6 +22,8 @@ export default function () {
       const refreshToken = data.refreshToken;
       localStorage.setItem("refreshToken", refreshToken);
       console.log(accessToken,"login")
+      const role = (data.roles)[0]
+      setRole(role); 
       if (data.roles[0] === 'SUPER_ADMIN') {
         router.replace('/administrator-dashboard');
       } else {

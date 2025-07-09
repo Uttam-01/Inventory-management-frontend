@@ -1,10 +1,14 @@
+import RoleProtected from "@/components/RoleProtection";
 
 
 
 
 export default function () {
   return (
-    <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+    
+    
+    
+    <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}><div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">Material IN</div>
         <div className="text-[#343A40] text-[18px] font-bold  mt-6">Recent Material OUT Entries</div>
 
@@ -31,6 +35,9 @@ export default function () {
           </div>
         ))}
       </div>
-    </div>
+    </div></RoleProtected>
+    
+        
+
   );
 }

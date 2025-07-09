@@ -20,7 +20,6 @@ export const useUpdateVendorComponent= () => {
 
 
 async function apiReq(temp : {reqData: VendorComponent, id : number}) {
-    console.log("in api req" , temp.reqData)
   return authRequest({ url: `${API_ROUTES.VENDOR_COMPONENT}/${temp.id}`, method: "PUT" , data : temp.reqData});
   
 }

@@ -2,6 +2,7 @@
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
+import RoleProtected from "@/components/RoleProtection";
 
 import { useMachines } from "@/lib/api/machineApi/useMachines";
 import { useEffect, useState } from "react";
@@ -38,6 +39,7 @@ export default function () {
   }
 
   return (
+    <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER" , "ADMIN"]}>
     <div className="w-[1404px] mx-auto flex flex-col h-min bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">Machine List</div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 text-[14px] font-normal  font-emoji h-[54px] items-center">
@@ -111,7 +113,7 @@ export default function () {
               {machine.associateSpareCount}
             </div>
             <div className="w-[16.6%] flex justify-center items-center gap-4">
-              <Edit to={`/machine-list/edit-machine/${machine.id}`} />
+              <Edit to={`/machine-management/edit-machine/${machine.id}`} />
               <button  type="button" 
                 onClick={() => deleteMachine(machine.id)}
               className="w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center hover:cursor-pointer">
@@ -145,5 +147,6 @@ export default function () {
         ))}
       </div>
     </div>
+    </RoleProtected>
   );
 }

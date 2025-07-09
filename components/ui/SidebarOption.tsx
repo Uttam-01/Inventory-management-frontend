@@ -10,7 +10,7 @@ function SidebarOption(e: { name: string; to: string }) {
   return (
     <Link
       href={e.to}
-      className={`w-[224px] mb-[20px] transition-all h-[48px] rounded-[8px]  hover:text-[#0F4C81] hover:text-[16px] hover:font-medium hover:bg-[#CFDBE6] hover:cursor-pointer flex justify-start items-center px-[10px] ${`/${pathParts[pathParts.length -1]}` === e.to ? "text-[#0F4C81] text-[16px] font-medium bg-[#CFDBE6]" : "text-[#343A40] font-sans "}`}
+      className={`w-[224px] mb-[10px] transition-all h-[48px] rounded-[8px]  hover:text-[#0F4C81] hover:text-[16px] hover:font-medium hover:bg-[#CFDBE6] hover:cursor-pointer flex justify-start items-center px-[10px] ${`/${pathParts[pathParts.length -1]}` === e.to ? "text-[#0F4C81] text-[16px] font-medium bg-[#CFDBE6]" : "text-[#343A40] font-sans "}`}
     >
       {e.name}
     </Link>

@@ -11,10 +11,12 @@ type SearchDropdownProps<T> = {
   isLoading: boolean;
   error: boolean;
   formError?: string;
-  nameKey?: keyof T;
+  nameKey?: "name" | "displayName";
 };
 
-export default function SearchDropdown<T extends { id?: number | string ; name?: string}>({
+export default function SearchDropdown<
+  T extends { id?: number | string; name?: string; displayName?: string }
+>({
   label,
   placeholder,
   data,
@@ -97,7 +99,9 @@ export default function SearchDropdown<T extends { id?: number | string ; name?:
                       setIsOpen(false);
                     }}
                   >
-                    {String(item[nameKey])}
+                    {nameKey in item && item[nameKey]
+                      ? String(item[nameKey])
+                      : String(item["displayName"] ?? "")}
                   </li>
                 ))}
               </ul>

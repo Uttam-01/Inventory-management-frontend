@@ -52,7 +52,7 @@ function AddNewMachine() {
   }, [data]);
 
   const filteredComponents = components.filter((component) =>
-    component.name.toLowerCase().includes(search.toLowerCase())
+    component.displayName.toLowerCase().includes(search.toLowerCase())
   );
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const addMachineMutation = useAddMachines();
@@ -181,7 +181,7 @@ function AddNewMachine() {
                         onClick={() =>
                           setReqComponents((prev) =>
                             prev.filter(
-                              (component) => component.name !== selected.name
+                              (component) => component.name != selected.displayName
                             )
                           )
                         }
@@ -221,7 +221,7 @@ function AddNewMachine() {
                 onClick={() => setIsOpen(isOpen ? false : true)}
                 className="h-[50px] w-full border-[1px] border-[#D1D5DB] flex items-center justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
               >
-                {selected ? selected.name : "Component Name"}
+                {selected ? selected.displayName : "Component Name"}
                 <svg
                   width="25"
                   height="24"
@@ -265,7 +265,7 @@ function AddNewMachine() {
                       )}
                       {filteredComponents.map((component, i) => (
                         <li
-                          key={component.id ? component.id : i}
+                          key={component.id }
                           className={`p-2 cursor-pointer hover:bg-blue-100 ${
                             selected === component.id ? "bg-blue-50" : ""
                           }`}
@@ -274,7 +274,7 @@ function AddNewMachine() {
                             setIsOpen(false);
                           }}
                         >
-                          {component.name}
+                          {component.displayName}
                         </li>
                       ))}
                     </ul>
@@ -295,18 +295,18 @@ function AddNewMachine() {
               type="button"
               onClick={() => {
                 if (
-                  selected.name != null &&
-                  selected.name != "" &&
+                  selected.displayName != null &&
+                  selected.displayName != "" &&
                   quantity != null &&
                   quantity != 0
                 ) {
                   const temp = reqComponents.find(
-                    (comp) => comp.name === selected.name
+                    (comp) => comp.name == selected.displayName
                   );
                   if (temp) {
                     setReqComponents((prev) =>
                       prev.map((comp) =>
-                        comp.name === selected.name
+                        comp.name == selected.displayName
                           ? {
                               ...comp,
                               quantityRequired: Math.max(
@@ -358,18 +358,18 @@ function AddNewMachine() {
             onClick={() => {
               if (
                 selected != null &&
-                selected.name != null &&
-                selected.name != "" &&
+             selected.displayName != null &&
+             selected.displayName != "" &&
                 quantity != null &&
                 quantity != 0
               ) {
                 const temp = reqComponents.find(
-                  (comp) => comp.name === selected.name
+                  (comp) => comp.name == selected.displayName
                 );
                 if (temp) {
                   setReqComponents((prev) =>
                     prev.map((comp) =>
-                      comp.name === selected.name
+                      comp.name == selected.displayName
                         ? {
                             ...comp,
                             quantityRequired: comp.quantityRequired + quantity,
@@ -381,7 +381,7 @@ function AddNewMachine() {
                   setReqComponents((prev) => [
                     ...prev,
                     {
-                      name: selected.name,
+                      name : selected.displayName,
                       quantityRequired: quantity,
                       componentId: selected.id,
                     },
