@@ -47,7 +47,7 @@ export const materialInSchema = z.object({
   transportCharge: parseNumberField("Transport Charge", { nonnegative: true }),
   packingCharges: parseNumberField("Packing Charges", { nonnegative: true }),
   billNo: parseNumberField("Bill No", { int: true, positive: true }),
-
+  status: z.string().optional(),
   remarks: z.string().optional().nullable(),
 });
 

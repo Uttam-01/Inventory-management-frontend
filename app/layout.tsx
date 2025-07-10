@@ -42,6 +42,7 @@ export default function RootLayout({
               {children}
             </div>
           </div>
+          <div className="fixed z-2000 bottom-0 font-bold font-sans py-2 text-[#FFFFFF]  w-screen flex items-center justify-center bg-[#3f4143]">© 2025 Inventery Management. All rights reserved. Developed By Uttam Sharma , Ankit Karodiya </div>
         </body>
       </QueryClientProvider>
     </html>

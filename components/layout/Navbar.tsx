@@ -42,7 +42,7 @@ function Navbar() {
             <SidebarOption to={"/vendor-components"} name="Vendor-Components"/>
             <SidebarOption to={"/material-in"} name="Material IN"/>
             <SidebarOption to={"/material-out"} name="Material OUT"/>
-            <SidebarOption to={"/allotted-material"} name="Allotted Material"/>
+            <SidebarOption to={"/alloted-material"} name="Allotted Material"/>
             <SidebarOption to={"/cancelled-allocated-material"} name="Cancelled Allocated Material"/>
             <SidebarOption to={"/not-completed"} name="Labour Master"/>
             <SidebarOption to={"/product-price-comparision"} name="Product Price Comparision"/>

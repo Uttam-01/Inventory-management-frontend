@@ -29,7 +29,7 @@ export default function () {
         This section allows you to manage user accounts effectively.
       </div>
       <div className="flex justify-between items-center">
-        <AddButton to="/" text="Create New User" />
+        <AddButton to="/user-account-management/add-user" text="Create New User" />
       </div>
 
       <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB] ">

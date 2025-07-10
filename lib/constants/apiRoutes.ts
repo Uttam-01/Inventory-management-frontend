@@ -8,4 +8,6 @@ export const API_ROUTES = {
   COMPONENT: `${baseUrl}component`,
   VENDOR_COMPONENT: `${baseUrl}vendor-components`,
   INVENTORY: `${baseUrl}inventory`,
+  WORKORDER: `${baseUrl}orders`,
+  SIGNUP: `${baseUrl}auth/sign-up`
 };

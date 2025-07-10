@@ -38,18 +38,18 @@ export default function () {
           <div className="w-[20%] items-center h-full flex justify-center font-bold text-[16px] text-[#000000]  border-r-[1px] border-[#E5E7EB]">Min Stock</div>
           <div className="w-[20%] items-center h-full flex justify-center font-bold text-[16px] text-[#000000]  ">Diffrence</div>
         </div>
-        {Array.from({ length: 4 }).map((_, index) => (
+        {data.map((item : any, index : number) => (
           <div
-            key={index}
+            key={item.id}
             className={`flex justify-evenly  items-center h-[41px] ${
               index === 3 ? "" : "border-b-[1px] border-[#E5E7EB]"
             }`}
           >
-            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB] border-l-[3px] border-l-[#DC3545]">Material A</div>
-            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">Category 1</div>
-            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">3</div>
-            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">10</div>
-            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2]  text-[#DC3545]">-7</div>
+            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB] border-l-[3px] border-l-[#DC3545]">{item.name}</div>
+            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">{item.category}</div>
+            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">{item.currentStock}</div>
+            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2] border-r-[1px] border-[#E5E7EB]">{item.minimumStock} </div>
+            <div className="w-[20%] flex justify-center items-center h-full bg-[#FEE2F2]  text-[#DC3545]">{item.difference}</div>
           </div>
         ))}
       </div>

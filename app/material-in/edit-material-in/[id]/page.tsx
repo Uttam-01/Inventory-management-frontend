@@ -11,6 +11,8 @@ import { isErrored } from "stream";
 import Edit from "@/components/ui/Edit";
 import RoleProtected from "@/components/RoleProtection";
 import { usePathname } from "next/navigation";
+import { useUpdateInventory } from "@/lib/api/inventoryApi/useUpdateInventory";
+import { useRouter } from "next/navigation";
 
 function InputBox(e: {
   label: string;
@@ -31,6 +33,7 @@ function InputBox(e: {
         className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
         name={e.name}
         onChange={e.onChange}
+        defaultValue={e.defaultValue}
       />
       {e.error && <span className="text-red-500 text-xs">{e.error}</span>}
     </div>
@@ -49,11 +52,14 @@ export default function () {
   const [VendorOpen, setVendorOpen] = useState<boolean>(false);
   const [vendorMounted, setvendorMounted] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const addInventoryMutation = useAddInventory();
+  const updateInventoryMutation = useUpdateInventory();
   const [unitPrice, setUnitPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
   const [inventoryInfo, setInventoryInfo] = useState<any>();
+  const [status, setStatus] = useState<string>();
   const pathname = usePathname();
+  const router = useRouter();
+
   useEffect(() => {
     setMounted(true);
     setvendorMounted(true);
@@ -73,27 +79,28 @@ export default function () {
     error: allVendorError,
   } = useVendors();
   useEffect(() => {
-      const getInfo = async () => {
-        const pathParts = pathname.split("/").filter(Boolean);
-        const inventoryId = pathParts[pathParts.length - 1];
-  
-        try {
-          const data = await authRequest({
-            url: `${API_ROUTES.INVENTORY}/${inventoryId}`,
-            method: "GET",
-          });
-  
-          console.log("Fetched Inventory info:", data);
-          setInventoryInfo(data);
-        } catch (err) {
-          console.error("Failed to fetch Machine info:", err);
-        }
-      };
-  
-      if (pathname) {
-        getInfo();
+    const getInfo = async () => {
+      const pathParts = pathname.split("/").filter(Boolean);
+      const inventoryId = pathParts[pathParts.length - 1];
+
+      try {
+        const data = await authRequest({
+          url: `${API_ROUTES.INVENTORY}/${inventoryId}`,
+          method: "GET",
+        });
+
+        console.log("Fetched Inventory info:", data);
+        setInventoryInfo(data);
+        setStatus(()=>data.status)
+      } catch (err) {
+        console.error("Failed to fetch Machine info:", err);
       }
-    }, [pathname]);
+    };
+
+    if (pathname) {
+      getInfo();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (allComponents) setComponents(allComponents);
@@ -128,6 +135,15 @@ export default function () {
     };
     fetchData();
   }, [selectedVendor]);
+  useEffect(() => {
+    if (updateInventoryMutation.isSuccess) {
+      const timeout = setTimeout(() => {
+        router.push("/material-in");
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [updateInventoryMutation.isSuccess]);
 
   if (!mounted) return null;
   if (!vendorMounted) return null;
@@ -146,25 +162,26 @@ export default function () {
     const formData = Object.fromEntries(
       new FormData(e.currentTarget).entries()
     );
+    let finalData = {};
     if (!selected && !selectedVendor) {
-      setFormErrors({
-        component: "Component is Required.",
-        vendor: "Vendor is required.",
-      });
-      return;
+      finalData = {
+        ...formData,
+        componentId: inventoryInfo?.componentId,
+        vendorId: inventoryInfo?.vendorId,
+      };
     } else if (!selected) {
       setFormErrors({ component: "Component is Required." });
       return;
     } else if (!selectedVendor) {
       setFormErrors({ vendor: "Vendor is required." });
       return;
+    } else {
+      finalData = {
+        ...formData,
+        componentId: selected.id ?? selected.componentId,
+        vendorId: selectedVendor.id ?? selectedVendor.vendorId,
+      };
     }
-    const finalData = {
-      ...formData,
-      componentId: selected.id ?? selected.componentId,
-      vendorId: selectedVendor.id ?? selectedVendor.vendorId,
-    };
-    console.log(finalData);
     const result = materialInSchema.safeParse(finalData);
     if (!result.success) {
       const errors: { [key: string]: string } = {};
@@ -175,8 +192,14 @@ export default function () {
       return;
     }
     setFormErrors({});
-    addInventoryMutation.mutate(result.data);
+    const pathParts = pathname.split("/").filter(Boolean);
+    const inventoryId = pathParts[pathParts.length - 1];
+    updateInventoryMutation.mutate({
+      reqData: result.data,
+      id: Number(inventoryId),
+    });
   }
+
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
       <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
@@ -191,7 +214,7 @@ export default function () {
             </div>
             <div className="flex flex-wrap gap-y-5 justify-between">
               <div className="flex flex-col gap-1.5">
-                <div>Component Name</div>
+                <div>Component Name - ({inventoryInfo?.componentName})</div>
                 <div className="relative flex flex-col  h-[41px] w-[430px]">
                   <button
                     type="button"
@@ -220,11 +243,6 @@ export default function () {
                       />
                     </svg>
                   </button>
-                  {formErrors.component && (
-                    <span className="text-red-500 text-xs">
-                      {formErrors.component}
-                    </span>
-                  )}
 
                   <div
                     className={`${
@@ -267,7 +285,6 @@ export default function () {
                                 setIsOpen(false);
                               }}
                             >
-                              jhbj
                               {component.displayName ?? component.name}
                             </li>
                           ))}
@@ -276,6 +293,11 @@ export default function () {
                     )}
                   </div>
                 </div>
+                {formErrors.component && (
+                  <span className="text-red-500 text-xs">
+                    {formErrors.component}
+                  </span>
+                )}
               </div>
               <InputBox
                 onChange={(e: any) => setQuantity(e.target.value)}
@@ -283,6 +305,7 @@ export default function () {
                 label="Quantity"
                 placeholder="0"
                 error={formErrors.quantity}
+                defaultValue={inventoryInfo?.quantity}
               />
               <InputBox
                 onChange={(e: any) => setUnitPrice(e.target.value)}
@@ -290,9 +313,10 @@ export default function () {
                 label="Unit Price"
                 placeholder="0"
                 error={formErrors.unitPrice}
+                defaultValue={inventoryInfo?.unitPrice}
               />
               <div className="flex flex-col gap-1.5">
-                <div>Vendor Name</div>
+                <div>Vendor Name - ({inventoryInfo?.vendorName})</div>
                 <div className="relative flex flex-col  h-[41px] w-[430px]">
                   <button
                     type="button"
@@ -316,11 +340,6 @@ export default function () {
                       />
                     </svg>
                   </button>
-                  {formErrors.vendor && (
-                    <span className="text-red-500 text-xs">
-                      {formErrors.vendor}
-                    </span>
-                  )}
 
                   <div
                     className={`${
@@ -365,6 +384,11 @@ export default function () {
                     )}
                   </div>
                 </div>
+                {formErrors.vendor && (
+                  <span className="text-red-500 text-xs">
+                    {formErrors.vendor}
+                  </span>
+                )}
               </div>
 
               <InputBox
@@ -372,26 +396,28 @@ export default function () {
                 label="GST %"
                 placeholder="0"
                 error={formErrors.gstPercentage}
+                defaultValue={inventoryInfo?.gstPercentage}
               />
               <InputBox
                 name="packingCharges"
                 label="Packing Charges"
                 placeholder="0"
                 error={formErrors.packingCharges}
+                defaultValue={inventoryInfo?.packingCharges}
               />
               <InputBox
                 name="transportCharge"
                 label="Transport Charges"
                 placeholder="0"
                 error={formErrors.transportCharge}
+                defaultValue={inventoryInfo?.transportCharge}
               />
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
-                  Remarks
-                </label>
+                <label htmlFor="">Remarks</label>
                 <textarea
                   name="remarks"
+                  defaultValue={inventoryInfo?.remarks}
                   placeholder=""
                   className="h-[41px] min-h-[41px] w-[886px] border-[1px] pt-2 border-[#E5E7EB] px-3 rounded-[8px] resize-y "
                 />
@@ -402,122 +428,41 @@ export default function () {
                 placeholder="0"
                 name="billNo"
                 error={formErrors.billNo}
+                defaultValue={inventoryInfo?.billNo}
               />
+              <div className="flex flex-col gap-1.5">
+                <div>Status</div>
+                <select
+                  className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
+                  name="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  id=""
+                >
+                  <option value="ORDERED">ORDERED</option>
+                  <option value="LOADED">LOADED</option>
+                  <option value="IN_TRANSIT">IN_TRANSIT</option>
+                  <option value="RECEIVED">RECEIVED</option>
+                </select>
+              </div>
+              <div className="w-[430px]"></div>
             </div>
           </div>
           <div className="text-[#0F4C81] bg-[#E0F2F7] flex justify-center rounded-[8px] my-6 text-[16px] font-bold  font-emoji h-[56px] items-center">
             Total Effective Price: ₹{unitPrice * quantity}
           </div>
-          <button className=" hover:cursor-pointer h-[42px]  rounded-[8px] w-full   text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-            Record Material IN
+          <button className=" mb-20px hover:cursor-pointer h-[42px]  rounded-[8px] w-full   text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
+            Update
           </button>
-        </form>
-        <div className="text-[#343A40] text-[18px] font-bold  mt-6">
-          Recent Material IN Entries
-        </div>
-
-        {isLoading ? (
-          <div>Loading....</div>
-        ) : error ? (
-          <div>Error occured.</div>
-        ) : (
-          <div className="border-[1px] rounded-[6px] border-[#D1D5DB] mt-1 mb-6">
-            <div className="flex justify-center bg-[#E5E7EB] h-[41px] border-b-[1px] border-[#D1D5DB] items-center">
-              <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Date
-              </div>
-              <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Bill No
-              </div>
-              <div className="w-[26%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Product Name
-              </div>
-              <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Vendor
-              </div>
-              <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Quantity
-              </div>
-              <div className="w-[14%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Total Effective Price
-              </div>
-              <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                Status
-              </div>
-
-              <div className="w-[11%] flex justify-center items-center   text-[16px] text-[#6B7280] font-bold h-full">
-                Remarks
-              </div>
+          {updateInventoryMutation.isSuccess && (
+            <div className="text-green-600 w-full">
+              Component Updated Successfully.
             </div>
-            {data.map((item: any, index: number) => (
-              <div
-                key={index}
-                className={`flex justify-evenly  items-center h-[50px] ${
-                  index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
-                }  ${
-                  index === data.length - 1
-                    ? ""
-                    : "border-b-[1px] border-[#D1D5DB]"
-                } `}
-              >
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.updatedAt.substring(0, 10)}
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.billNo}
-                </div>
-                <div className="w-[26%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.componentName}
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.vendorName}
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.quantity}
-                </div>
-                <div className="w-[14%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  ₹{item.totalPrice}
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                  {item.status}
-                </div>
-                <div className="w-[11%] flex justify-center items-center gap-4">
-                  <Edit to={`/material-in/edit-material-in/${item.id}`} />
-                  <button
-                    onClick={() => {}}
-                    type="button"
-                    className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center"
-                  >
-                    <svg
-                      width="17"
-                      height="16"
-                      viewBox="0 0 17 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g clipPath="url(#clip0_16_2934)">
-                        <path
-                          d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
-                          fill="#DC3545"
-                        />
-                      </g>
-                      <defs>
-                        <clipPath id="clip0_16_2934">
-                          <rect
-                            width="16"
-                            height="16"
-                            fill="white"
-                            transform="translate(0.143311)"
-                          />
-                        </clipPath>
-                      </defs>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+          )}
+          {updateInventoryMutation.isError && (
+            <div>Error updating machine.</div>
+          )}
+        </form>
       </div>
     </RoleProtected>
   );

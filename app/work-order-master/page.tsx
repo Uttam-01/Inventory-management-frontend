@@ -1,6 +1,9 @@
+"use client"
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
+import { useEffect, useState } from "react";
+import { useWorkOrder } from "@/lib/api/wokOrderApi/useWorkOrder";
 
 
 function WIP(){
@@ -19,16 +22,42 @@ function Completed(){
     )
 }
 
-function Status(e: {index: number}){
+function Ordered(){
+    return(
+        <button className="bg-[#feffb6] h[29px] w-[111px] text-[#28B463] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]" >Ordered</button>
+    )
+}
+
+function Status(e: {index: number , status : string}){
     return (
-        <div className="w-[20%] flex justify-center">
-            {e.index === 1 ? <WIP/>: 
-            e.index === 0? <NotStarted/> : <Completed/>}
+        <div className="w-[25%] flex justify-center">
+            {e.status === "ORDERED" && <Ordered/>}
+            {e.status === "WORK_IN_PROGRESS" && <WIP/>}
+            {e.status === "NOT_STARTED_YET" && <NotStarted/>}
+            {e.status === "COMPLETED" && <Completed/>}
         </div>
     )
 }
 
+// const deleteVendor = useDeleteVendor();
+  
+  // useEffect(() => setMounted(true), []);
+  // const handleDelete = (id: number) => {
+  //  deleteVendor.mutateAsync(id)
+  //   .then(() => window.location.reload())
+  //   .catch(err => console.error("Error deleting Vendor:", err));
+  // };
+
+
+
 export default function () {
+  const [mounted, setMounted] = useState(false);
+  useEffect(()=> setMounted(true) , [])
+  const { data, isLoading, error } = useWorkOrder();
+
+  if (!mounted) return null;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading Vendors.</div>;
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">
@@ -75,25 +104,23 @@ export default function () {
 
       <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB]">
         <div className="flex justify-center bg-[#E5E7EB] h-[41px] items-center">
-          <div className="w-[20%] flex justify-center">WO No</div>
-          <div className="w-[20%] flex justify-center">JOB DETAILS</div>
-          <div className="w-[20%] flex justify-center">AGENT</div>
-          <div className="w-[20%] flex justify-center">STATUS</div>
-          <div className="w-[20%] flex justify-center">ACTIONS</div>
+          <div className="w-[25%] flex justify-center">WO No</div>
+          <div className="w-[25%] flex justify-center">JOB DETAILS</div>
+          <div className="w-[25%] flex justify-center">STATUS</div>
+          <div className="w-[25%] flex justify-center">ACTIONS</div>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {data.map((item : any, index : number) => (
           <div
             key={index}
             className={`flex justify-evenly  items-center h-[64px] ${
               index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
             }`}
           >
-            <div className="w-[20%] flex justify-center">1234</div>
-            <div className="w-[20%] flex justify-center">Fix broken windiow</div>
-            <div className="w-[20%] flex justify-center">Agent 1</div>
-            <Status index={index}/>
+            <div className="w-[25%] flex justify-center">{item.orderId}</div>
+            <div className="w-[25%] flex justify-center">{item.machineName}</div>
+            <Status index={index} status={item.status}/>
 
-            <div className="w-[20%] flex justify-center items-center gap-4">
+            <div className="w-[25%] flex justify-center items-center gap-4">
               <Edit to="/" />
               <Delete to="/"></Delete>
             </div>

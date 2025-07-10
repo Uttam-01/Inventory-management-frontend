@@ -10,6 +10,7 @@ import { useAddInventory } from "@/lib/api/inventoryApi/useAddInventory";
 import { isErrored } from "stream";
 import Edit from "@/components/ui/Edit";
 import RoleProtected from "@/components/RoleProtection";
+import { useDeleteInventory } from "@/lib/api/inventoryApi/useDeleteInventory";
 
 function InputBox(e: {
   label: string;
@@ -18,6 +19,7 @@ function InputBox(e: {
   defaultValue?: number;
   error?: string;
   onChange?: any;
+  max?: string
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -30,6 +32,7 @@ function InputBox(e: {
         className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
         name={e.name}
         onChange={e.onChange}
+        max={e.max}
       />
       {e.error && <span className="text-red-500 text-xs">{e.error}</span>}
     </div>
@@ -51,7 +54,7 @@ export default function () {
   const addInventoryMutation = useAddInventory();
   const [unitPrice, setUnitPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
-
+  const deleteInventory = useDeleteInventory();
   useEffect(() => {
     setMounted(true);
     setvendorMounted(true);
@@ -151,7 +154,14 @@ export default function () {
     }
     setFormErrors({});
     addInventoryMutation.mutate(result.data);
+  }  
+  async function  handleDelete(id : number){
+     deleteInventory.mutateAsync(id)
+    .then(() => window.location.reload())
+    .catch(err => console.error("Error deleting machine:", err));
+    
   }
+
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
       <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
@@ -258,6 +268,7 @@ export default function () {
                 label="Quantity"
                 placeholder="0"
                 error={formErrors.quantity}
+                max="9"
               />
               <InputBox
                 onChange={(e: any) => setUnitPrice(e.target.value)}
@@ -459,7 +470,7 @@ export default function () {
                 <div className="w-[11%] flex justify-center items-center gap-4">
                   <Edit to={`/material-in/edit-material-in/${item.id}`} />
                   <button
-                    onClick={() => {}}
+                    // onClick={() => {handleDelete(item.id)}}
                     type="button"
                     className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center"
                   >
