@@ -9,7 +9,7 @@ export const componentSchema = z.object({
 //     invalid_type_error: "Dimensions must be a string",
 //     required_error: "Dimensions are required",
 //   }).min(1, "Dimensions are required"),
-  availableStock: z.coerce.number().int("Quantity should be a number").nonnegative("Quantity should be positive").optional(),
+  availableQuantity: z.coerce.number().int("Quantity should be a number").nonnegative("Quantity should be positive").optional(),
   minimumStock: z.coerce.number().int("Min. Stock should be a number").nonnegative("Min. Stock should be positive").min(1, "Min. Stock is required"),
   locationInStore: z.string().optional(),
   description: z.string().optional(),

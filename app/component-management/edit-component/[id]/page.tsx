@@ -8,7 +8,7 @@ import { Component, componentSchema } from "@/lib/schemas/component.schema";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { number } from "zod/v4";
+
 
 function InputBox(e: {
   label: string;
@@ -54,7 +54,7 @@ function InputBox(e: {
 }
 
 export default function () {
-  const [componentInfo, setComponentInfo] = useState<Component>();
+  const [componentInfo, setComponentInfo] = useState<any>();
   const router = useRouter();
   const pathname = usePathname();
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
