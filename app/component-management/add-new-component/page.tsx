@@ -166,7 +166,7 @@ export default function () {
                 error={formErrors.minimumStock}
               />
               <InputBox
-                name="availableStock"
+                name="availableQuantity"
                 label="Available Stock"
                 placeholder="Enter Available Stock"
                 button={false}

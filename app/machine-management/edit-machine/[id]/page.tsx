@@ -460,7 +460,7 @@ export default function () {
 
               <div className="w-full flex h-[42px] items-center justify-end gap-4">
                 <Link
-                  href={"/machine-list"}
+                  href={"/machine-management"}
                   className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
                 >
                   Cancel

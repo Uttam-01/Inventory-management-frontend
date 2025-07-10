@@ -204,11 +204,11 @@ export default function () {
                 defaultValue={componentInfo?.minimumStock}
               />
               <InputBox
-                name="availableStock"
+                name="availableQuantity"
                 label="Available Stock"
                 placeholder="Enter Available Stock"
                 button={false}
-                defaultValue={componentInfo?.availableQuantity ?? 0}
+                defaultValue={componentInfo?.availableStock}
               />
               <div className="relative flex flex-col w-full">
                 <label

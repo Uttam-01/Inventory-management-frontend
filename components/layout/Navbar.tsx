@@ -48,6 +48,7 @@ function Navbar() {
             <SidebarOption to={"/product-price-comparision"} name="Product Price Comparision"/>
             <SidebarOption to={"/rejected-scrap-material"} name="Rejected/Scrap Material"/>
             <SidebarOption to={"/not-completed"} name="Inventory Audit"/>
+            <SidebarOption to={"/low-stock-material-list"} name="Low Stock Material List"/>
             
 
           </div>

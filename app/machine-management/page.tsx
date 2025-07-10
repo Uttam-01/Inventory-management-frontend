@@ -48,7 +48,7 @@ export default function () {
         Use this master to enable inventory forecasting.
       </div>
       <div className="flex justify-between items-center">
-        <AddButton to="/machine-list/add-new-machine" text="Add New Machine" />
+        <AddButton to="/machine-management/add-new-machine" text="Add New Machine" />
         <div className="relative h-[50px] w-[444px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
           <input
             type="text"

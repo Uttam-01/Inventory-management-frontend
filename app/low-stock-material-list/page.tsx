@@ -1,5 +1,11 @@
+import { useLowStock } from "@/lib/api/useLowStock";
 
 export default function () {
+
+
+  // const {data, isLoading , error} = useLowStock();
+  // if(isLoading) return <div>Loading....</div>
+  // if(error) return <div>Error loading loaw stock Material List</div>
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">
