@@ -1,8 +1,10 @@
 "use client";
+import { authRequest } from "@/lib/api/auth";
 import { useMachines } from "@/lib/api/machineApi/useMachines";
 import { useAddWorkOrder } from "@/lib/api/wokOrderApi/useAddWorkOrder";
+import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function InputBox(e: { label: string; placeholder: string; name: string }) {
@@ -22,14 +24,38 @@ function InputBox(e: { label: string; placeholder: string; name: string }) {
 
 export default function () {
   const router = useRouter();
+  const pathname = usePathname();
   const [components, setComponents] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [workOrderInfo, setWorkOrderInfo] = useState<any>();
   useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useMachines();
+   useEffect(() => {
+      const getInfo = async () => {
+        const pathParts = pathname.split("/").filter(Boolean);
+        const workOrderId = pathParts[pathParts.length - 1];
+  
+        try {
+          const data = await authRequest({
+            url: `${API_ROUTES.WORKORDER}/${workOrderId}`,
+            method: "GET",
+          });
+  
+          console.log("Fetched work-order info:", data);
+          setWorkOrderInfo(data);
+        } catch (err) {
+          console.error("Failed to fetch work-order info:", err);
+        }
+      };
+  
+      if (pathname) {
+        getInfo();
+      }
+    }, [pathname]);
   useEffect(() => {
     if (data) setComponents(data);
   }, [data]);

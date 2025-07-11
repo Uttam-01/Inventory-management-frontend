@@ -4,11 +4,11 @@ import { Login } from "@/lib/api/login";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
-
 export default function () {
   const router = useRouter();
-  const setRole = useAuthStore((state) => state.setRole);
-  
+  const setRoles = useAuthStore((state) => state.setRoles);
+  const setUserName = useAuthStore((state) => state.setUserName);
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -21,18 +21,19 @@ export default function () {
       localStorage.setItem("accessToken", accessToken);
       const refreshToken = data.refreshToken;
       localStorage.setItem("refreshToken", refreshToken);
-      console.log(accessToken,"login")
-      const role = (data.roles)[0]
-      setRole(role); 
-      if (data.roles[0] === 'SUPER_ADMIN') {
-        router.replace('/administrator-dashboard');
+      console.log(accessToken, "login");
+      const roles = data.roles;
+      setRoles(roles);
+      setUserName(data.email)
+      if (Array.isArray(data.roles) && data.roles.includes("SUPER_ADMIN")) {
+        router.replace("/administrator-dashboard");
       } else {
-        router.replace('/dashboard');
+        router.replace("/dashboard");
       }
     } catch (err) {
       console.error(err);
       router.refresh();
-      alert("Invalid Email or Password.")
+      alert("Invalid Email or Password.");
     }
   };
 
@@ -99,4 +100,3 @@ export default function () {
 function setError(arg0: string) {
   throw new Error("Function not implemented.");
 }
-

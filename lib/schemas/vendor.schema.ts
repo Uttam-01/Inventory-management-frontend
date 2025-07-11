@@ -58,17 +58,23 @@ export const vendorSchema = z.object({
     .transform((val) => val.toUpperCase())
     .optional(),
   name: z
-    .string()
-    .min(1, "Name is required")
-    .refine((val) => /^[A-Za-z ]+$/, {
-      message: "Name must contain only alphabets and spaces",
-    })
-    .transform((val) =>
-      val
-        .trim()
-        .toLowerCase()
-        .replace(/\b\w/g, (char) => char.toUpperCase())
-    ),
+  .string()
+  .min(1, "Name is required")
+  .refine((val) => /^[A-Za-z]+( [A-Za-z]+)*$/.test(val), {
+    message: "Only letters and single spaces allowed",
+  })
+  .refine((val) => val.trim().split(" ").length <= 50, {
+    message: "Name must not exceed 50 words",
+  })
+  .transform((val) =>
+    val
+      .trim()
+      .split(" ")
+      .map((word) =>
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ")
+  ),
   panNumber: z
     .string()
     .transform((val) => val.toUpperCase())

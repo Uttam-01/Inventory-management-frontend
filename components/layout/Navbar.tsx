@@ -2,12 +2,12 @@
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import SidebarOption from "../ui/SidebarOption";
 function Navbar() {
-  const role = useAuthStore((state) => state.role);
+  const roles = useAuthStore((state) => state.roles);
   return (
       
           <div className="bg-white  fixed h-screen w-[256px] transition-transform duration-300  pt-25 z-10 top-0 flex-col flex items-center justify-start">
 
-            {role === "MANAGER" ? 
+            {roles.includes("MANAGER")  ? 
             <div><div className="text-[#1F2937] text-[24px] font-bold items-start  w-full px-5 mb-10">
               Store Manager
             </div>
@@ -22,14 +22,14 @@ function Navbar() {
             <SidebarOption to={"/allotted-material"} name="Allotted Material"/>
             <SidebarOption to={"/cancelled-allocated-material"} name="Cancelled Allocated Material"/>
           </div>
-            : role === "EMPLOYEE" ? 
+            : roles.includes("EMPLOYEE") ? 
             <div>
               <div className="text-[#1F2937] text-[24px] font-bold items-start  w-full px-5 mb-10">
               Cost Accountant Menu
             </div>
             <SidebarOption to={"/bill-of-materials"} name="BOM Screen"/>
           </div> 
-          : role === ("ADMIN") || role === "SUPER_ADMIN" ?
+          : roles.includes("ADMIN") || roles.includes("SUPER_ADMIN")  ?
                 <div>
             <div className="text-[#1F2937] text-[24px] font-bold items-start  w-full px-5 mb-5">
               Admin

@@ -1,11 +1,12 @@
 "use client";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navigtaion() {
   const pathname = usePathname();
     const pathParts = pathname.split("/").filter(Boolean);
-
+    const userName = useAuthStore((state) => state.userName);
     
   
   return (
@@ -18,7 +19,7 @@ export default function Navigtaion() {
                 </div>
                 <div className="flex items-center justify-center gap-3">
                     <div className="text-[#6B7280] text-[14px] font-normal font-emoji">
-                        User ID: SM_001
+                        User Name : {userName}
                     </div>
                     <Link
                         href={"/auth/login"}

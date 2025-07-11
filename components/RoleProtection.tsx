@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -10,16 +10,18 @@ export default function RoleProtected({
   allowedRoles: string[];
   children: React.ReactNode;
 }) {
-  const role = useAuthStore((state) => state.role);
+  const roles = useAuthStore((state) => state.roles); // array of roles
   const router = useRouter();
-    console.log(role);
+
+  const isAuthorized = roles?.some((role) => allowedRoles.includes(role));
+
   useEffect(() => {
-    if (!role || !allowedRoles.includes(role)) {
+    if (!isAuthorized) {
       router.replace("/unauthorized"); // or login
     }
-  }, [role, allowedRoles]);
+  }, [isAuthorized, router, allowedRoles]);
 
-  if (!role || !allowedRoles.includes(role)) return null;
+  if (!isAuthorized) return null;
 
   return <>{children}</>;
 }

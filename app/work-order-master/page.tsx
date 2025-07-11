@@ -105,7 +105,7 @@ export default function () {
       <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB]">
         <div className="flex justify-center bg-[#E5E7EB] h-[41px] items-center">
           <div className="w-[25%] flex justify-center">WO No</div>
-          <div className="w-[25%] flex justify-center">JOB DETAILS</div>
+          <div className="w-[25%] flex justify-center">Machine</div>
           <div className="w-[25%] flex justify-center">STATUS</div>
           <div className="w-[25%] flex justify-center">ACTIONS</div>
         </div>
@@ -121,7 +121,7 @@ export default function () {
             <Status index={index} status={item.status}/>
 
             <div className="w-[25%] flex justify-center items-center gap-4">
-              <Edit to="/" />
+              <Edit to={`/work-order-master/edit-work-order/${item.orderId}`} />
               <Delete to="/"></Delete>
             </div>
           </div>
