@@ -2,12 +2,18 @@
 import { authRequest } from "@/lib/api/auth";
 import { useMachines } from "@/lib/api/machineApi/useMachines";
 import { useAddWorkOrder } from "@/lib/api/wokOrderApi/useAddWorkOrder";
+import { useUpdateWorkOrder } from "@/lib/api/wokOrderApi/useUpdateWorkOrder";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-function InputBox(e: { label: string; placeholder: string; name: string }) {
+function InputBox(e: {
+  label: string;
+  placeholder: string;
+  name: string;
+  defaultValue: string;
+}) {
   return (
     <div className="relative flex flex-col gap-1.5">
       <label htmlFor="" className="text-[#343A40] text-[14px] font-normal">
@@ -17,6 +23,8 @@ function InputBox(e: { label: string; placeholder: string; name: string }) {
         className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
         type="text"
         placeholder={e.placeholder}
+        defaultValue={e.defaultValue}
+        name = {e.name}
       />
     </div>
   );
@@ -32,48 +40,58 @@ export default function () {
   const [mounted, setMounted] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [workOrderInfo, setWorkOrderInfo] = useState<any>();
+  const [status, setStatus] = useState<string>();
   useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useMachines();
-   useEffect(() => {
-      const getInfo = async () => {
-        const pathParts = pathname.split("/").filter(Boolean);
-        const workOrderId = pathParts[pathParts.length - 1];
-  
-        try {
-          const data = await authRequest({
-            url: `${API_ROUTES.WORKORDER}/${workOrderId}`,
-            method: "GET",
-          });
-  
-          console.log("Fetched work-order info:", data);
-          setWorkOrderInfo(data);
-        } catch (err) {
-          console.error("Failed to fetch work-order info:", err);
-        }
-      };
-  
-      if (pathname) {
-        getInfo();
-      }
-    }, [pathname]);
   useEffect(() => {
     if (data) setComponents(data);
   }, [data]);
+  useEffect(() => {
+    const getInfo = async () => {
+      const pathParts = pathname.split("/").filter(Boolean);
+      const workOrderId = pathParts[pathParts.length - 1];
+
+      try {
+        const workData = await authRequest({
+          url: `${API_ROUTES.WORKORDER}/${workOrderId}`,
+          method: "GET",
+        });
+        setStatus(workData?.status);
+        console.log("Fetched work-order info:", workData);
+        setWorkOrderInfo(workData);
+      } catch (err) {
+        console.error("Failed to fetch work-order info:", err);
+      }
+    };
+
+    if (pathname) {
+      getInfo();
+    }
+  }, [pathname]);
+  useEffect(() => {
+    if (components.length > 0 && workOrderInfo) {
+      const sel = components.find(
+        (component) => component.id === workOrderInfo.machineId
+      );
+      setSelected(sel);
+    }
+  }, [components, workOrderInfo]);
+
   const filteredComponents = components.filter((component) =>
     (component.name ?? component.displayName)
       .toLowerCase()
       .includes(search.toLowerCase())
   );
-  const addWorkOrderMutation = useAddWorkOrder();
+  const updateWorkOrderMutation = useUpdateWorkOrder();
   useEffect(() => {
-    if (addWorkOrderMutation.isSuccess) {
+    if (updateWorkOrderMutation.isSuccess) {
       const timeout = setTimeout(() => {
-        router.push("/machine-management");
+        router.push("/work-order-master");
       }, 1000);
 
-      return () => clearTimeout(timeout); // Cleanup if component unmounts
+      return () => clearTimeout(timeout); 
     }
-  }, [addWorkOrderMutation.isSuccess]);
+  }, [updateWorkOrderMutation.isSuccess]);
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = Object.fromEntries(
@@ -83,7 +101,8 @@ export default function () {
       ...formData,
       machineId: selected.id,
     };
-    // console.log(formData);
+    console.log("formData" , formData);
+    console.log("finalData" , finalData);
     // const result = componentSchema.safeParse(formData);
     // if (!result.success) {
     //   const errors: { [key: string]: string } = {};
@@ -97,7 +116,9 @@ export default function () {
     // console.log(formErrors);
 
     // setFormErrors({});
-    addWorkOrderMutation.mutate(finalData);
+    const pathParts = pathname.split("/").filter(Boolean);
+    const workOrderId = pathParts[pathParts.length - 1];
+    updateWorkOrderMutation.mutate({ reqData: finalData, id: Number(workOrderId)});
   }
 
   return (
@@ -106,17 +127,17 @@ export default function () {
       style={{ boxShadow: "0px 10px 15px -3px #0000001A" }}
     >
       <div className="text-[#0F4C81] font-bold text-[20px]">
-        Add New Work Order
+        Edit Work Order
       </div>
       <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 text-[14px] font-normal  font-emoji h-[94px] items-center">
-        Define new work order details or update existing information. Work
-        orders are central to tracking material usage and project costs.
+        Edit existing work order information. Work orders are central to
+        tracking material usage and project costs.
       </div>
       <form onSubmit={handleFormSubmit}>
         <div className="mt-[25px]">
           <div className="flex flex-wrap gap-x-6 gap-y-8 mt-[10px]">
-            <div className="relative flex flex-col gap-1 w-[338px]">
-              <label htmlFor="">Select Machine</label>
+            <div className="relative flex flex-col gap-1.5 w-[338px]">
+              <label htmlFor="" className="text-[#343A40] text-[14px] font-normal">Select Machine</label>
               <button
                 type="button"
                 onClick={() => setIsOpen(isOpen ? false : true)}
@@ -190,48 +211,70 @@ export default function () {
                 )}
               </div>
             </div>
+            <div className="relative flex flex-col gap-1.5">
+                <div className="text-[#343A40] text-[14px] font-normal">Status</div>
+                <select
+                  className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
+                  name="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  id=""
+                >
+                  <option value="ORDERED">Ordered</option>
+                  <option value="WORK_IN_PROGRESS">Work In Progress</option>
+                  <option value="NOT_STARTED_YET">Not Started Yet</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </div>
             <InputBox
               name="agentName"
               label="Agent Name"
               placeholder="Enter Agent Name"
+              defaultValue={workOrderInfo?.agentName}
             />
+            
             <InputBox
               name=""
               label="Buyer Name"
               placeholder="Enter Buyer Name"
+              defaultValue={workOrderInfo?.buyerName}
             />
             <InputBox
               name="buyerCountry"
               label="Buyer Country"
               placeholder="Enter Buyer Name"
+              defaultValue={workOrderInfo?.buyerCountry}
             />
             <InputBox
               name="buyerState"
               label="Buyer State"
               placeholder="Enter Buyer State"
+              defaultValue={workOrderInfo?.buyerState}
             />
             <InputBox
               name="buyerCity"
               label="Buyer City"
               placeholder="Enter Buyer City"
+              defaultValue={workOrderInfo?.buyerCity}
             />
             <InputBox
               name="remarks"
               label="Remarks"
               placeholder="Enter Remarks (Optional)"
+              defaultValue={workOrderInfo?.remarks}
             />
           </div>
         </div>
-        {addWorkOrderMutation.isSuccess && (
+        {updateWorkOrderMutation.isSuccess && (
           <div className="text-green-600 w-full">
-            Added Machine Successfully.
+            Updated Work-Order Successfully.
           </div>
         )}
-        {addWorkOrderMutation.error && (
+        {updateWorkOrderMutation.error && (
           <div className="text-red-500 text-sm mt-2">
-            {(addWorkOrderMutation.error as any)?.response?.data?.message ??
-              (addWorkOrderMutation.error as any)?.response?.data?.error ??
-              addWorkOrderMutation.error.message ??
+            {(updateWorkOrderMutation.error as any)?.response?.data?.message ??
+              (updateWorkOrderMutation.error as any)?.response?.data?.error ??
+              updateWorkOrderMutation.error.message ??
               "Something went wrong"}
           </div>
         )}
@@ -243,7 +286,7 @@ export default function () {
             Cancel
           </Link>
           <button className="hover:cursor-pointer h-[42px]  rounded-[8px] w-[154px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-            Add Work Order
+            Edit Work Order
           </button>
         </div>
       </form>

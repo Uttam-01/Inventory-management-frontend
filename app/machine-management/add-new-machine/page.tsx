@@ -62,7 +62,7 @@ function AddNewMachine() {
         router.push("/machine-management");
       }, 1000);
 
-      return () => clearTimeout(timeout); // Cleanup if component unmounts
+      return () => clearTimeout(timeout);  
     }
   }, [addMachineMutation.isSuccess]);
 

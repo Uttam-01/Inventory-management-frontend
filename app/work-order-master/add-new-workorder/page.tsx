@@ -15,6 +15,7 @@ function InputBox(e: { label: string; placeholder: string; name: string }) {
         className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
         type="text"
         placeholder={e.placeholder}
+        name = {e.name}
       />
     </div>
   );
@@ -42,10 +43,10 @@ export default function () {
   useEffect(() => {
     if (addWorkOrderMutation.isSuccess) {
       const timeout = setTimeout(() => {
-        router.push("/machine-management");
+        router.push("/work-order-master");
       }, 1000);
 
-      return () => clearTimeout(timeout); // Cleanup if component unmounts
+      return () => clearTimeout(timeout);
     }
   }, [addWorkOrderMutation.isSuccess]);
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -98,7 +99,7 @@ export default function () {
               >
                 {selected
                   ? selected.displayName ?? selected.name
-                  : "Component Name"}
+                  : "Machine Name"}
                 <svg
                   width="25"
                   height="24"
@@ -170,7 +171,7 @@ export default function () {
               placeholder="Enter Agent Name"
             />
             <InputBox
-              name=""
+              name="buyerName"
               label="Buyer Name"
               placeholder="Enter Buyer Name"
             />
@@ -196,29 +197,31 @@ export default function () {
             />
           </div>
         </div>
-        {addWorkOrderMutation.isSuccess && (
-          <div className="text-green-600 w-full">
-            Added Machine Successfully.
+        <div className="flex items-center justify-between py-5">
+          {addWorkOrderMutation.isSuccess && (
+            <div className="text-green-600 w-full">
+              Added Work Order Successfully.
+            </div>
+          )}
+          {addWorkOrderMutation.error && (
+            <div className="text-red-500 text-sm mt-2">
+              {(addWorkOrderMutation.error as any)?.response?.data?.message ??
+                (addWorkOrderMutation.error as any)?.response?.data?.error ??
+                addWorkOrderMutation.error.message ??
+                "Something went wrong"}
+            </div>
+          )}
+          <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
+            <Link
+              href={"/work-order-master"}
+              className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
+            >
+              Cancel
+            </Link>
+            <button className="hover:cursor-pointer h-[42px]  rounded-[8px] w-[154px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
+              Add Work Order
+            </button>
           </div>
-        )}
-        {addWorkOrderMutation.error && (
-          <div className="text-red-500 text-sm mt-2">
-            {(addWorkOrderMutation.error as any)?.response?.data?.message ??
-              (addWorkOrderMutation.error as any)?.response?.data?.error ??
-              addWorkOrderMutation.error.message ??
-              "Something went wrong"}
-          </div>
-        )}
-        <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
-          <Link
-            href={"/work-order-master"}
-            className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
-          >
-            Cancel
-          </Link>
-          <button className="hover:cursor-pointer h-[42px]  rounded-[8px] w-[154px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-            Add Work Order
-          </button>
         </div>
       </form>
     </div>

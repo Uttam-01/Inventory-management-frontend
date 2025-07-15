@@ -16,7 +16,6 @@ function Navbar() {
             <SidebarOption to={"/component-management"} name="Component Management"/>
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
             <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
-            <SidebarOption to={"/work-order-master/add-new-workorder"} name="Work Order Add/Exit"/>
             <SidebarOption to={"/material-in"} name="Material IN"/>
             <SidebarOption to={"/material-out"} name="Material OUT"/>
             <SidebarOption to={"/allotted-material"} name="Allotted Material"/>
@@ -40,15 +39,11 @@ function Navbar() {
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
             <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
             <SidebarOption to={"/vendor-components"} name="Vendor-Components"/>
-            <SidebarOption to={"/material-in"} name="Material IN"/>
-            <SidebarOption to={"/material-out"} name="Material OUT"/>
-            <SidebarOption to={"/alloted-material"} name="Allotted Material"/>
-            <SidebarOption to={"/cancelled-allocated-material"} name="Cancelled Allocated Material"/>
+            <SidebarOption to={"/material-in"} name="Material Flow"/>
             <SidebarOption to={"/not-completed"} name="Labour Master"/>
             <SidebarOption to={"/product-price-comparision"} name="Product Price Comparision"/>
-            <SidebarOption to={"/rejected-scrap-material"} name="Rejected/Scrap Material"/>
             <SidebarOption to={"/not-completed"} name="Inventory Audit"/>
-            <SidebarOption to={"/low-stock-material-list"} name="Low Stock Material List"/>
+            <SidebarOption to={"/abrasive-management"} name="Abrasive Management"/>
             
 
           </div>

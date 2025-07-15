@@ -13,6 +13,7 @@ import RoleProtected from "@/components/RoleProtection";
 import { usePathname } from "next/navigation";
 import { useUpdateInventory } from "@/lib/api/inventoryApi/useUpdateInventory";
 import { useRouter } from "next/navigation";
+import MaterialFlowNav from "@/components/layout/MaterialFlowNav";
 
 function InputBox(e: {
   label: string;
@@ -55,6 +56,9 @@ export default function () {
   const updateInventoryMutation = useUpdateInventory();
   const [unitPrice, setUnitPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
+  const [gst, setGst] = useState<number>(0);
+  const [packing, setPacking] = useState<number>(0);
+  const [transport, setTransport] = useState<number>(0);
   const [inventoryInfo, setInventoryInfo] = useState<any>();
   const [status, setStatus] = useState<string>();
   const pathname = usePathname();
@@ -91,7 +95,12 @@ export default function () {
 
         console.log("Fetched Inventory info:", data);
         setInventoryInfo(data);
-        setStatus(()=>data.status)
+        setGst(data.gstPercentage);
+        setPacking(data.packingCharges);
+        setTransport(data.transportCharge);
+        setQuantity(data.quantity);
+        setUnitPrice(data.unitPrice);
+        setStatus(() => data.status);
       } catch (err) {
         console.error("Failed to fetch Machine info:", err);
       }
@@ -112,7 +121,7 @@ export default function () {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedVendor && selected && selected.id) {
+      if (selected && selected.id) {
         const res = await authRequest({
           url: `${API_ROUTES.VENDOR_COMPONENT}/component/${selected.id}`,
           method: "GET",
@@ -124,7 +133,7 @@ export default function () {
   }, [selected]);
   useEffect(() => {
     const fetchData = async () => {
-      if (!selected && selectedVendor && selectedVendor.id) {
+      if (selectedVendor && selectedVendor.id) {
         const res = await authRequest({
           url: `${API_ROUTES.VENDOR_COMPONENT}/vendor/${selectedVendor.id}`,
           method: "GET",
@@ -202,267 +211,312 @@ export default function () {
 
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
-      <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
-        <div className="text-[#0F4C81] font-bold text-[20px]">Material IN</div>
-        <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 mb-3 text-[14px] font-normal  font-emoji h-[54px] items-center">
-          Use this form to record new material entries quickly and efficiently.
+      <div className="w-[1404px] mx-auto flex flex-col rounded-[8px]  justify-start">
+        <div className="w-[1404px] mx-auto flex flex-col   rounded-[8px] pb-8 justify-start ">
+          <MaterialFlowNav />
         </div>
-        <form onSubmit={handleFormSubmit} className="w-full flex flex-col">
-          <div>
-            <div className="text-[#343A40] text-[18px] font-bold mb-2.5 mt-3">
-              Record New Material Entry
-            </div>
-            <div className="flex flex-wrap gap-y-5 justify-between">
-              <div className="flex flex-col gap-1.5">
-                <div>Component Name - ({inventoryInfo?.componentName})</div>
-                <div className="relative flex flex-col  h-[41px] w-[430px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (VendorOpen && !isOpen) setVendorOpen(false);
-                      setIsOpen(isOpen ? false : true);
-                    }}
-                    className="h-[50px] w-full border-[1px] border-[#E5E7EB] px-3 rounded-[8px] flex items-center justify-between  shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
-                  >
-                    {selected
-                      ? selected.displayName ?? selected.name
-                      : "Component Name"}
-                    <svg
-                      width="25"
-                      height="24"
-                      viewBox="0 0 25 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7.55713 10L12.5571 15L17.5571 10"
-                        stroke="#B2B2B2"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-
-                  <div
-                    className={`${
-                      isOpen ? "block" : "hidden"
-                    } absolute top-12 bg-[#FFFFFF] z-10 flex flex-col w-full border-[1px] border-[#D1D5DB] h-[400px]  items-start justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]`}
-                  >
-                    {!mounted ? null : isLoading ? (
-                      <div>Loading...</div>
-                    ) : error ? (
-                      <div>Error loading components.</div>
-                    ) : (
-                      <div className="w-full">
-                        <input
-                          type="text"
-                          placeholder="Search components..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="border border-gray-300 rounded h-[50px] p-2 w-full my-2"
-                        />
-                        <ul className="  w-full h-[300px] overflow-y-auto bg-white ">
-                          {filteredComponents.length === 0 && (
-                            <li className="p-2 text-gray-400">
-                              No components found
-                            </li>
-                          )}
-                          {filteredComponents.map((component, i) => (
-                            <li
-                              key={
-                                component.id
-                                  ? component.id
-                                  : component.componentId
-                                  ? component.componentId
-                                  : i
-                              }
-                              className={`p-2 cursor-pointer hover:bg-blue-100 ${
-                                selected === component.id ? "bg-blue-50" : ""
-                              }`}
-                              onClick={() => {
-                                setSelected(component);
-                                setIsOpen(false);
-                              }}
-                            >
-                              {component.displayName ?? component.name}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {formErrors.component && (
-                  <span className="text-red-500 text-xs">
-                    {formErrors.component}
-                  </span>
-                )}
+        <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+          <div className="text-[#0F4C81] font-bold text-[20px]">
+            Material IN
+          </div>
+          <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 mb-3 text-[14px] font-normal  font-emoji h-[54px] items-center">
+            Use this form to record new material entries quickly and
+            efficiently.
+          </div>
+          <form onSubmit={handleFormSubmit} className="w-full flex flex-col">
+            <div>
+              <div className="text-[#343A40] text-[18px] font-bold mb-2.5 mt-3">
+                Record New Material Entry
               </div>
-              <InputBox
-                onChange={(e: any) => setQuantity(e.target.value)}
-                name="quantity"
-                label="Quantity"
-                placeholder="0"
-                error={formErrors.quantity}
-                defaultValue={inventoryInfo?.quantity}
-              />
-              <InputBox
-                onChange={(e: any) => setUnitPrice(e.target.value)}
-                name="unitPrice"
-                label="Unit Price"
-                placeholder="0"
-                error={formErrors.unitPrice}
-                defaultValue={inventoryInfo?.unitPrice}
-              />
-              <div className="flex flex-col gap-1.5">
-                <div>Vendor Name - ({inventoryInfo?.vendorName})</div>
-                <div className="relative flex flex-col  h-[41px] w-[430px]">
-                  <button
-                    type="button"
-                    onClick={() => setVendorOpen(VendorOpen ? false : true)}
-                    className="h-[50px] w-full border-[1px] border-[#E5E7EB] px-3 rounded-[8px] flex items-center justify-between   shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
-                  >
-                    {selectedVendor ? selectedVendor.name : "Vendor Name"}
-                    <svg
-                      width="25"
-                      height="24"
-                      viewBox="0 0 25 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+              <div className="flex flex-wrap gap-y-5 justify-between">
+                <div className="flex flex-col gap-1.5">
+                  <div>Component Name - ({inventoryInfo?.componentName})</div>
+                  <div className="relative flex flex-col  h-[41px] w-[430px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (VendorOpen && !isOpen) setVendorOpen(false);
+                        setIsOpen(isOpen ? false : true);
+                      }}
+                      className="h-[50px] w-full border-[1px] border-[#E5E7EB] px-3 rounded-[8px] flex items-center justify-between  shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
                     >
-                      <path
-                        d="M7.55713 10L12.5571 15L17.5571 10"
-                        stroke="#B2B2B2"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-
-                  <div
-                    className={`${
-                      VendorOpen ? "block" : "hidden"
-                    } absolute top-12 bg-[#FFFFFF] z-10 flex flex-col w-full border-[1px] border-[#D1D5DB] h-[400px]  items-start justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]`}
-                  >
-                    {!vendorMounted ? null : isAllVendorLoading ? (
-                      <div>Loading...</div>
-                    ) : allVendorError ? (
-                      <div>Error loading Vendors.</div>
-                    ) : (
-                      <div className="w-full">
-                        <input
-                          type="text"
-                          placeholder="SearchVendors..."
-                          value={searchVendor}
-                          onChange={(e) => setSearchVendor(e.target.value)}
-                          className="border border-gray-300 rounded h-[50px] p-2 w-full my-2"
+                      {selected
+                        ? selected.displayName ?? selected.name
+                        : "Component Name"}
+                      <svg
+                        width="25"
+                        height="24"
+                        viewBox="0 0 25 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7.55713 10L12.5571 15L17.5571 10"
+                          stroke="#B2B2B2"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
-                        <div className="  w-full h-[300px] overflow-y-auto bg-white ">
-                          {filteredVendors.length === 0 && (
-                            <div className="p-2 text-gray-400">
-                              No components found
-                            </div>
-                          )}
-                          {filteredVendors.map((k, i) => (
-                            <div
-                              key={k.id ? k.id : i}
-                              className={`p-2 cursor-pointer hover:bg-blue-100 ${
-                                selectedVendor === k.id ? "bg-blue-50" : ""
-                              }`}
-                              onClick={() => {
-                                setSelectedVendor(k);
-                                setVendorOpen(false);
-                              }}
-                            >
-                              {k.name}
-                            </div>
-                          ))}
+                      </svg>
+                    </button>
+
+                    <div
+                      className={`${
+                        isOpen ? "block" : "hidden"
+                      } absolute top-12 bg-[#FFFFFF] z-10 flex flex-col w-full border-[1px] border-[#D1D5DB] h-[400px]  items-start justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]`}
+                    >
+                      {!mounted ? null : isLoading ? (
+                        <div>Loading...</div>
+                      ) : error ? (
+                        <div>Error loading components.</div>
+                      ) : (
+                        <div className="w-full">
+                          <input
+                            type="text"
+                            placeholder="Search components..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="border border-gray-300 rounded h-[50px] p-2 w-full my-2"
+                          />
+                          <ul className="  w-full h-[300px] overflow-y-auto bg-white ">
+                            {filteredComponents.length === 0 && (
+                              <li className="p-2 text-gray-400">
+                                No components found
+                              </li>
+                            )}
+                            {filteredComponents.map((component, i) => (
+                              <li
+                                key={
+                                  component.id
+                                    ? component.id
+                                    : component.componentId
+                                    ? component.componentId
+                                    : i
+                                }
+                                className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                                  selected === component.id ? "bg-blue-50" : ""
+                                }`}
+                                onClick={() => {
+                                  setSelected(component);
+                                  setIsOpen(false);
+                                }}
+                              >
+                                {component.displayName ?? component.name}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
+                  {formErrors.component && (
+                    <span className="text-red-500 text-xs">
+                      {formErrors.component}
+                    </span>
+                  )}
                 </div>
-                {formErrors.vendor && (
-                  <span className="text-red-500 text-xs">
-                    {formErrors.vendor}
-                  </span>
-                )}
-              </div>
 
-              <InputBox
-                name="gstPercentage"
-                label="GST %"
-                placeholder="0"
-                error={formErrors.gstPercentage}
-                defaultValue={inventoryInfo?.gstPercentage}
-              />
-              <InputBox
-                name="packingCharges"
-                label="Packing Charges"
-                placeholder="0"
-                error={formErrors.packingCharges}
-                defaultValue={inventoryInfo?.packingCharges}
-              />
-              <InputBox
-                name="transportCharge"
-                label="Transport Charges"
-                placeholder="0"
-                error={formErrors.transportCharge}
-                defaultValue={inventoryInfo?.transportCharge}
-              />
-
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="">Remarks</label>
-                <textarea
-                  name="remarks"
-                  defaultValue={inventoryInfo?.remarks}
-                  placeholder=""
-                  className="h-[41px] min-h-[41px] w-[886px] border-[1px] pt-2 border-[#E5E7EB] px-3 rounded-[8px] resize-y "
+                <InputBox
+                  onChange={(e: any) => setQuantity(e.target.value)}
+                  name="quantity"
+                  label="Quantity"
+                  placeholder="0"
+                  error={formErrors.quantity}
+                  defaultValue={inventoryInfo?.quantity}
                 />
-                {formErrors.remarks}
+                <InputBox
+                  onChange={(e: any) => setUnitPrice(e.target.value)}
+                  name="unitPrice"
+                  label="Unit Price"
+                  placeholder="0"
+                  error={formErrors.unitPrice}
+                  defaultValue={inventoryInfo?.unitPrice}
+                />
+                <div className="flex flex-col gap-1.5">
+                  <div>Vendor Name - ({inventoryInfo?.vendorName})</div>
+                  <div className="relative flex flex-col  h-[41px] w-[430px]">
+                    <button
+                      type="button"
+                      onClick={() => setVendorOpen(VendorOpen ? false : true)}
+                      className="h-[50px] w-full border-[1px] border-[#E5E7EB] px-3 rounded-[8px] flex items-center justify-between   shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
+                    >
+                      {selectedVendor ? selectedVendor.name : "Vendor Name"}
+                      <svg
+                        width="25"
+                        height="24"
+                        viewBox="0 0 25 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7.55713 10L12.5571 15L17.5571 10"
+                          stroke="#B2B2B2"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+
+                    <div
+                      className={`${
+                        VendorOpen ? "block" : "hidden"
+                      } absolute top-12 bg-[#FFFFFF] z-10 flex flex-col w-full border-[1px] border-[#D1D5DB] h-[400px]  items-start justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]`}
+                    >
+                      {!vendorMounted ? null : isAllVendorLoading ? (
+                        <div>Loading...</div>
+                      ) : allVendorError ? (
+                        <div>Error loading Vendors.</div>
+                      ) : (
+                        <div className="w-full">
+                          <input
+                            type="text"
+                            placeholder="SearchVendors..."
+                            value={searchVendor}
+                            onChange={(e) => setSearchVendor(e.target.value)}
+                            className="border border-gray-300 rounded h-[50px] p-2 w-full my-2"
+                          />
+                          <div className="  w-full h-[300px] overflow-y-auto bg-white ">
+                            {filteredVendors.length === 0 && (
+                              <div className="p-2 text-gray-400">
+                                No components found
+                              </div>
+                            )}
+                            {filteredVendors.map((k, i) => (
+                              <div
+                                key={k.id ? k.id : i}
+                                className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                                  selectedVendor === k.id ? "bg-blue-50" : ""
+                                }`}
+                                onClick={() => {
+                                  setSelectedVendor(k);
+                                  setVendorOpen(false);
+                                }}
+                              >
+                                {k.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {formErrors.vendor && (
+                    <span className="text-red-500 text-xs">
+                      {formErrors.vendor}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
+                    GST %
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
+                    name="gstPercentage"
+                    onChange={(e: any) => setGst(e.target.value)}
+                    defaultValue={inventoryInfo?.gstPercentage}
+                  />
+                  {formErrors.gstPercentage && (
+                    <span className="text-red-500 text-xs">
+                      {formErrors.gstPercentage}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
+                    Packing Charges
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
+                    name="packingCharges"
+                    onChange={(e: any) => setPacking(e.target.value)}
+                    defaultValue={inventoryInfo?.packingCharges}
+                  />
+                  {formErrors.packingCharges && (
+                    <span className="text-red-500 text-xs">
+                      {formErrors.packingCharges}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
+                    Transport Charges
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
+                    name="transportCharge"
+                    onChange={(e: any) => setTransport(e.target.value)}
+                    defaultValue={inventoryInfo?.transportCharge}
+                  />
+                  {formErrors.transportCharge && (
+                    <span className="text-red-500 text-xs">
+                      {formErrors.transportCharge}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="">Remarks</label>
+                  <textarea
+                    name="remarks"
+                    defaultValue={inventoryInfo?.remarks}
+                    placeholder=""
+                    className="h-[41px] min-h-[41px] w-[886px] border-[1px] pt-2 border-[#E5E7EB] px-3 rounded-[8px] resize-y "
+                  />
+                  {formErrors.remarks}
+                </div>
+                <InputBox
+                  label="Bill Number"
+                  placeholder="0"
+                  name="billNo"
+                  error={formErrors.billNo}
+                  defaultValue={inventoryInfo?.billNo}
+                />
+                <div className="flex flex-col gap-1.5">
+                  <div>Status</div>
+                  <select
+                    className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
+                    name="status"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    id=""
+                  >
+                    <option value="ORDERED">ORDERED</option>
+                    <option value="LOADED">LOADED</option>
+                    <option value="IN_TRANSIT">IN_TRANSIT</option>
+                    <option value="RECEIVED">RECEIVED</option>
+                  </select>
+                </div>
+                <div className="w-[430px]"></div>
               </div>
-              <InputBox
-                label="Bill Number"
-                placeholder="0"
-                name="billNo"
-                error={formErrors.billNo}
-                defaultValue={inventoryInfo?.billNo}
-              />
-              <div className="flex flex-col gap-1.5">
-                <div>Status</div>
-                <select
-                  className="h-[41px] w-[430px] border-[1px] border-[#E5E7EB] px-3 rounded-[8px]"
-                  name="status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  id=""
-                >
-                  <option value="ORDERED">ORDERED</option>
-                  <option value="LOADED">LOADED</option>
-                  <option value="IN_TRANSIT">IN_TRANSIT</option>
-                  <option value="RECEIVED">RECEIVED</option>
-                </select>
+            </div>
+            <div className="text-[#0F4C81] bg-[#E0F2F7] flex justify-center rounded-[8px] my-6 text-[16px] font-bold  font-emoji h-[56px] items-center">
+              Total Effective Price: ₹
+              {Number(unitPrice) * Number(quantity) +
+                (Number(unitPrice) * Number(quantity) * Number(gst)) / 100 +
+                Number(transport) +
+                Number(packing)}
+            </div>
+            <button className=" mb-20px hover:cursor-pointer h-[42px]  rounded-[8px] w-full   text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
+              Update
+            </button>
+            {updateInventoryMutation.isSuccess && (
+              <div className="text-green-600 w-full">
+                Component Updated Successfully.
               </div>
-              <div className="w-[430px]"></div>
-            </div>
-          </div>
-          <div className="text-[#0F4C81] bg-[#E0F2F7] flex justify-center rounded-[8px] my-6 text-[16px] font-bold  font-emoji h-[56px] items-center">
-            Total Effective Price: ₹{unitPrice * quantity}
-          </div>
-          <button className=" mb-20px hover:cursor-pointer h-[42px]  rounded-[8px] w-full   text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
-            Update
-          </button>
-          {updateInventoryMutation.isSuccess && (
-            <div className="text-green-600 w-full">
-              Component Updated Successfully.
-            </div>
-          )}
-          {updateInventoryMutation.isError && (
-            <div>Error updating machine.</div>
-          )}
-        </form>
+            )}
+            {updateInventoryMutation.isError && (
+              <div>Error updating machine.</div>
+            )}
+          </form>
+        </div>
       </div>
     </RoleProtected>
   );

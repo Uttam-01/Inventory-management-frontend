@@ -2,15 +2,15 @@
 import { authRequest } from "../auth";
 import { useMutation } from "@tanstack/react-query";
 import { API_ROUTES } from "../../constants/apiRoutes";
-export const useAddWorkOrder = () => {
+export const useAddAllotment = () => {
   return useMutation({
     mutationFn: (reqData: any) => apiReq(reqData),
     onSuccess: (data) => {
-      console.log('Work Order Added:', data)
+      console.log('Material allotted sucessfully:', data)
       return data;
     },
     onError: (error) => {
-      console.error('Error creating Work Order:', error)
+      console.error('Error allotting material:', error)
       return error;
     }
   });
@@ -19,6 +19,6 @@ export const useAddWorkOrder = () => {
 
 
 async function apiReq(reqData: any) {
-  return authRequest({ url: API_ROUTES.WORKORDER, method: "POST" , data : reqData});
+  return authRequest({ url: API_ROUTES.VENDOR, method: "POST" , data : reqData});
   
 }

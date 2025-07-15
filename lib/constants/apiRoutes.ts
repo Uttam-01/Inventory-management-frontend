@@ -10,5 +10,6 @@ export const API_ROUTES = {
   INVENTORY: `${baseUrl}inventory`,
   WORKORDER: `${baseUrl}orders`,
   SIGNUP: `${baseUrl}auth/sign-up`,
-  USER: `${baseUrl}users`
+  USER: `${baseUrl}users`,
+  ALLOTMENT: `${baseUrl}allotment`,
 };

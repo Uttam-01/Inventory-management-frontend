@@ -9,7 +9,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
 function InputBox(e: {
   label: string;
   placeholder: string;
@@ -59,6 +58,7 @@ export default function () {
   const pathname = usePathname();
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const updateComponentMutation = useUpdateComponent();
+  const [selectedUnit, setSelectedUnit] = useState("");
   useEffect(() => {
     const getInfo = async () => {
       const pathParts = pathname.split("/").filter(Boolean);
@@ -72,6 +72,7 @@ export default function () {
 
         console.log("Fetched Component info:", data);
         setComponentInfo(data);
+        setSelectedUnit(data.units);
       } catch (err) {
         console.error("Failed to fetch Machine info:", err);
       }
@@ -81,6 +82,12 @@ export default function () {
       getInfo();
     }
   }, [pathname]);
+  useEffect(() => {
+    if (componentInfo?.units) {
+      console.log(componentInfo, "sdfdsagtretgf");
+      setSelectedUnit(componentInfo.units);
+    }
+  }, [componentInfo]);
   useEffect(() => {
     if (updateComponentMutation.isSuccess) {
       const timeout = setTimeout(() => {
@@ -153,6 +160,7 @@ export default function () {
                 placeholder="Select Sub Category"
                 button={false}
                 defaultValue={componentInfo?.subCategory}
+                error={formErrors.subCategory}
               />
               <InputBox
                 name="locationInStore"
@@ -160,6 +168,7 @@ export default function () {
                 placeholder="Enter Location"
                 button={false}
                 defaultValue={componentInfo?.locationInStore}
+                error={formErrors.locationInStore}
               />
               <div className="flex flex-col">
                 <label
@@ -169,22 +178,19 @@ export default function () {
                   Units
                 </label>
                 <select
-                  defaultValue={componentInfo?.units}
+                  value={selectedUnit}
+                  onChange={(e) =>{ console.log("selectedUnit");setSelectedUnit(e.target.value);}}
                   name="units"
                   id=""
                   className="h-[50px]  w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
                 >
-                  <option
-                    className="h-[50px]  w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3"
-                    value="KG"
-                  >
-                    Kilogram
-                  </option>
+                  <option value="KG">Kilogram</option>
                   <option value="METER">Meter</option>
                   <option value="INCH">Inch</option>
                   <option value="FOOT">Feet</option>
                   <option value="PIECE">Number of Items</option>
                 </select>
+                {formErrors.units && <span className="text-red-500 text-xs">{formErrors.units}</span>}
               </div>
 
               <InputBox
@@ -209,6 +215,7 @@ export default function () {
                 placeholder="Enter Available Stock"
                 button={false}
                 defaultValue={componentInfo?.availableStock}
+                error={formErrors.availableQuantity}
               />
               <div className="relative flex flex-col w-full">
                 <label
@@ -224,6 +231,7 @@ export default function () {
                   placeholder=""
                   defaultValue={componentInfo?.description}
                 />
+                {formErrors.description && <span className="text-red-500 text-xs">{formErrors.description}</span>}
               </div>
             </div>
           </div>

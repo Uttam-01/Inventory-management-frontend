@@ -119,12 +119,14 @@ export default function () {
                 label="Sub Category"
                 placeholder="Select Sub Category"
                 button={false}
+                error={formErrors.sub}
               />
               <InputBox
                 name="locationInStore"
                 label="Location in Store"
                 placeholder="Enter Location"
                 button={false}
+                error={formErrors.locationInStore}
               />
               <div className="flex flex-col">
                 <label
@@ -149,6 +151,7 @@ export default function () {
                   <option value="FOOT">Feet</option>
                   <option value="PIECE">Number of Items</option>
                 </select>
+                {formErrors.units && <span className="text-red-500 text-xs">{formErrors.units}</span>}
               </div>
 
               <InputBox
@@ -164,6 +167,7 @@ export default function () {
                 placeholder="Enter Minimum Stock"
                 button={false}
                 error={formErrors.minimumStock}
+                defaultValue={1}
               />
               <InputBox
                 name="availableQuantity"
@@ -171,6 +175,7 @@ export default function () {
                 placeholder="Enter Available Stock"
                 button={false}
                 defaultValue={0}
+                error={formErrors.availableQuantity}
               />
               <div className="relative flex flex-col w-full">
                 <label
@@ -185,6 +190,7 @@ export default function () {
                   type="text"
                   placeholder=""
                 />
+                {formErrors.description && <span className="text-red-500 text-xs">{formErrors.description}</span>}
               </div>
             </div>
           </div>
