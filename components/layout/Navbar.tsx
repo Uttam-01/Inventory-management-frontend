@@ -12,9 +12,9 @@ function Navbar() {
               Store Manager
             </div>
             <SidebarOption to={"/dashboard"} name="Dashboard"/>
-            <SidebarOption to={"/machine-management"} name="Machine Management"/>
             <SidebarOption to={"/component-management"} name="Component Management"/>
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
+            <SidebarOption to={"/machine-management"} name="Machine Management"/>
             <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
             <SidebarOption to={"/material-in"} name="Material IN"/>
             <SidebarOption to={"/material-out"} name="Material OUT"/>
@@ -34,11 +34,11 @@ function Navbar() {
               Admin
             </div>
             <SidebarOption to={"/administrator-dashboard"} name="Dashboard"/>
-            <SidebarOption to={"/machine-management"} name="Machine Management"/>
             <SidebarOption to={"/component-management"} name="Component Management"/>
             <SidebarOption to={"/vendor-management"} name="Vendor Management"/>
-            <SidebarOption to={"/work-order-master"} name="Work Order Management"/>
-            <SidebarOption to={"/vendor-components"} name="Vendor-Components"/>
+            <SidebarOption to={"/machine-management"} name="Machine Management"/>
+            <SidebarOption to={"/work-order-master"} name="Order Management"/>
+            {/* <SidebarOption to={"/vendor-components"} name="Vendor-Components"/> */}
             <SidebarOption to={"/material-in"} name="Material Flow"/>
             <SidebarOption to={"/not-completed"} name="Labour Master"/>
             <SidebarOption to={"/product-price-comparision"} name="Product Price Comparision"/>

@@ -1,37 +1,66 @@
+"use client"
 import MaterialFlowNav from "@/components/layout/MaterialFlowNav";
 import RoleProtected from "@/components/RoleProtection";
+import { useAllotment } from "@/lib/api/wokOrderApi/useAllotment";
+import { useEffect, useState } from "react";
 
-function Active() {
+function WIP() {
   return (
-    <button className="bg-[#DBEAFE] h-[32px] px-5 text-[#2563EB] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
-      Active
+    <button className="bg-[#D4EBF7] h[29px] w-[157px] text-[#0F4C81] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
+      Work In Progress
     </button>
   );
 }
-function Pending() {
+function NotStarted() {
   return (
-    <button className="bg-[#FEF9C3] h-[32px] px-5  text-[#CA8A04] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
-      Pending
+    <button className="bg-[#E9ECEF] h[29px] w-[143px] text-[#343A40] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
+      Not Started yet
     </button>
   );
 }
 function Completed() {
   return (
-    <button className="bg-[#DCFCE7] h-[32px] px-5 text-[#16A34A] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
+    <button className="bg-[#D4EDDA] h[29px] w-[111px] text-[#28B463] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
       Completed
     </button>
   );
 }
 
-function Status(e: { index: number }) {
+function Ordered() {
   return (
-    <div className="w-[17%] flex justify-center">
-      {e.index === 1 ? <Active /> : e.index === 0 ? <Pending /> : <Completed />}
+    <button className="bg-[#feffb6] h[29px] w-[111px] text-[#28B463] font-emoji text-[16px] font-normal flex items-center justify-center rounded-[9999px]">
+      Ordered
+    </button>
+  );
+}
+
+function Status(e: {status: string }) {
+  return (
+    <div className="w-[25%] flex justify-center">
+      {e.status === "ORDERED" && <Ordered />}
+      {e.status === "WORK_IN_PROGRESS" && <WIP />}
+      {e.status === "NOT_STARTED_YET" && <NotStarted />}
+      {e.status === "COMPLETED" && <Completed />}
     </div>
   );
 }
 
+
 export default function () {
+  const [mounted, setMounted] = useState(false);
+  const { data, isLoading, error } = useAllotment();
+    useEffect(() => setMounted(true), []);
+    // const handleDelete = (id: number) => {
+    //   deleteWorkOrder
+    //     .mutateAsync(id)
+    //     .then(() => window.location.reload())
+    //     .catch((err) => console.error("Error deleting Order:", err));
+    // };
+  
+    if (!mounted) return null;
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error loading Orders.</div>;
+    console.log(data)
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
       <div className="w-[1404px] mx-auto flex flex-col rounded-[8px]  justify-start">
@@ -70,7 +99,7 @@ export default function () {
             <div className="flex justify-between bg-[#E5E7EB] w-full h-[41px] items-center px-0">
               <div className="w-[11%] flex justify-center px-0 mx-0">Date </div>
               <div className="w-[11%] flex justify-center">Product Name</div>
-              <div className="w-[11%] flex justify-center">Quality</div>
+              <div className="w-[11%] flex justify-center">Quantity Alloted</div>
               <div className="w-[11%] flex justify-center">Unit</div>
               <div className="w-[14%] flex justify-center">
                 Work Order Number
@@ -83,21 +112,21 @@ export default function () {
                 Status of Work Order
               </div>
             </div>
-            {Array.from({ length: 3 }).map((_, index) => (
+            {data.map((item : any, index : number) => (
               <div
-                key={index}
+                key={item.id}
                 className={`flex justify-evenly  items-center h-[64px] ${
                   index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
                 }`}
               >
-                <div className="w-[11%] flex justify-center">23-10-01</div>
-                <div className="w-[11%] flex justify-center">Material 1</div>
-                <div className="w-[11%] flex justify-center">20 Kg</div>
+                <div className="w-[11%] flex justify-center">{item.allottedAt.substring(0,10)}</div>
+                <div className="w-[11%] flex justify-center">{item.componentName}</div>
+                <div className="w-[11%] flex justify-center">{item.quantityAllotted}</div>
                 <div className="w-[11%] flex justify-center">Kg</div>
-                <div className="w-[14%] flex justify-center">WO 1</div>
-                <div className="w-[11%] flex justify-center">Agent 1</div>
+                <div className="w-[14%] flex justify-center">{item.orderId}</div>
+                <div className="w-[11%] flex justify-center">{item.allotedTo}</div>
                 <div className="w-[14%] flex justify-center">Aisle 3</div>
-                <Status index={index} />
+                <Status status = {item.status} />
               </div>
             ))}
           </div>

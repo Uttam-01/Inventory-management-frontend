@@ -6,6 +6,7 @@ import { useDeleteComponent } from "@/lib/api/componentApi/useDeleteComponent";
 import { useComponents } from "@/lib/api/componentApi/useComponents";
 import { useEffect, useState } from "react";
 import RoleProtected from "@/components/RoleProtection";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function () {
   type Component = {
@@ -16,17 +17,18 @@ export default function () {
     displayName: string;
     status: string;
   };
+  const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
+  const [filters, setFilters] = useState<{ searchBar?: string ; locationInStore?: string }>({ searchBar: "" , locationInStore : ""});
   useEffect(() => setMounted(true), []);
   const delComponent = useDeleteComponent();
-  const { data, isLoading, error } = useComponents();
+  const { data, isLoading, error } = useComponents(filters);
+  useEffect(() => console.log("data" , data), [data]);
   if (!mounted) return null;
-  else if (isLoading) return <div>Loading.....</div>;
-  else if (error) return <div>Error loading components.</div>;
   async function deleteComponent(id: number) {
     delComponent
       .mutateAsync(id)
-      .then(() => window.location.reload())
+      .then(() => queryClient.invalidateQueries())
       .catch((err) => console.error("Error deleting Component:", err));
   }
 
@@ -51,6 +53,8 @@ export default function () {
                 type="text"
                 placeholder="Search Components..."
                 className="h-[50px] w-[255px] px-10 rounded-[6px]"
+                onChange={(e)=>{setFilters((prev) => ({...prev, searchBar : e.target.value, }))}}
+                value = {filters.searchBar}
               />
               <svg
                 className="absolute top-4 left-3"
@@ -105,17 +109,15 @@ export default function () {
                 Stock Type
               </option>
             </select>
+            <input
+                type="text"
+                placeholder="Location"
+                className="h-[50px] w-[135px] px-3 flex items-center justify-center  border-[#D1D5DB] border-[1px] rounded-[6px]"
+                value= {filters.locationInStore}
+                onChange={(e)=>{setFilters((prev) => ({...prev, locationInStore : e.target.value, }))}}
+              />
             <select
-              className="h-[50px] w-[135px] px-3 flex items-center justify-center text-[#B2B2B2] border-[#D1D5DB] border-[1px] rounded-[6px]"
-              name=""
-              id=""
-            >
-              <option className="" value="">
-                Location
-              </option>
-            </select>
-            <select
-              className="h-[50px] w-[135px] px-3 flex items-center justify-center text-[#B2B2B2] border-[#D1D5DB] border-[1px] rounded-[6px]"
+              className="h-[50px] w-[135px] px-3 flex items-center justify-center  border-[#D1D5DB] border-[1px] rounded-[6px]"
               name=""
               id=""
             >
@@ -125,8 +127,11 @@ export default function () {
             </select>
           </div>
         </div>
-
-        <div className="border-[1px] rounded-[6px] border-[#D1D5DB]">
+        
+        {
+          isLoading ?  <div>Loading.....</div> :
+          error ? <div>Error loading components.</div> : 
+          <div className="border-[1px] rounded-[6px] border-[#D1D5DB]">
           <div className="flex justify-center bg-[#FFFFFF] h-[41px] items-center border-[#D1D5DB] border-b-[1px]">
             <div className="w-[14.2%] flex justify-center">STATUS</div>
             <div className="w-[14.2%] flex justify-center">COMPONENT NAME</div>
@@ -223,6 +228,9 @@ export default function () {
             </div>
           ))}
         </div>
+        }
+
+        
       </div>
     </RoleProtected>
   );

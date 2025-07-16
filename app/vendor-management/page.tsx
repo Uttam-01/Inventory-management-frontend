@@ -41,6 +41,10 @@ export default function () {
           to="/vendor-management/add-new-vendor"
           text="Add New Vendor"
         />
+         <AddButton
+          to="/vendor-components"
+          text="Add component"
+        />
         <div className="relative h-[50px] w-[444px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
           <input
             type="text"

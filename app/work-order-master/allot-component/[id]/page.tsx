@@ -1,18 +1,17 @@
 "use client";
-import AddButton from "@/components/ui/Add";
-import Edit from "@/components/ui/Edit";
 import { authRequest } from "@/lib/api/auth";
-import { useAddAllotment } from "@/lib/api/wokOrderApi/useAllotment";
+import { useAddAllotment } from "@/lib/api/wokOrderApi/useAddAllotment";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function () {
   const [mounted, setMounted] = useState(false);
   const [checkbox, setCheckbox] =
     useState<{ componentId: any; value: boolean }[]>();
   useEffect(() => setMounted(true), []);
   const [orderId, setOrderId] = useState<any>();
-
+  const [componentInfo, setComponentInfo] = useState<any>();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -20,6 +19,16 @@ export default function () {
       const pathParts = pathname.split("/").filter(Boolean);
       const id = pathParts[pathParts.length - 1];
       setOrderId(id);
+      try {
+        const workData = await authRequest({
+          url: `${API_ROUTES.WORKORDER}/${id}/components`,
+          method: "GET",
+        });
+        console.log("Fetched Component info:", workData);
+        setComponentInfo(workData);
+      } catch (err) {
+        console.error("Failed to fetch Component info:", err);
+      }
     };
 
     if (pathname) {
@@ -55,9 +64,11 @@ export default function () {
     console.log("Selected Components with Quantity:", components);
     const finalPayload = {
       orderId: orderId,
+      allottedTo: formData.allottedTo,
       components,
     };
     console.log(finalPayload);
+    addAllotmentMutaion.mutate(finalPayload);
   }
 
   return (
@@ -65,7 +76,21 @@ export default function () {
       <div className="text-[#0F4C81] font-bold text-[20px] mb-5">
         Allot Material - Work Order Number #{orderId}
       </div>
+
       <form onSubmit={handleFormSubmit}>
+        <div className="relative flex flex-col mb-5">
+          <label htmlFor="" className="text-[#343A40] text-[14px] font-normal">
+            Issued To
+          </label>
+          <input
+            required
+            name="allottedTo"
+            className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
+            type="text"
+            placeholder="Issued to"
+          />
+          {/* {e.error && <span className="text-red-500 text-xs">for</span>} */}
+        </div>
         <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB]">
           <div className="flex justify-center bg-[#E5E7EB] h-[41px] items-center">
             <div className="w-[15%] flex justify-center">S. No.</div>
@@ -78,68 +103,80 @@ export default function () {
             <div className="w-[15%] flex justify-center">To Allot</div>
             {/* <div className="w-[25%] flex justify-center">ACTIONS</div> */}
           </div>
-          {Array.from({ length: 5 }).map((_, index: number) => (
-            <div
-              key={index}
-              className={`flex justify-evenly items-center h-[64px] ${
-                index % 2 === 0 ? "bg-[#c3fabe]" : "bg-[#ffffff]"
-              }`}
-            >
-              <div className="relative w-[15%] flex justify-center">
-                {
-                    index%2===0 && <svg className=" absolute left-8"
-                  width="12"
-                  height="19"
-                  viewBox="0 0 12 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2.71119 15.704C2.71119 15.5653 2.68452 15.496 2.63119 15.496L2.26319 15.672C2.26319 15.5973 2.22052 15.544 2.13519 15.512L2.00719 15.496C1.92185 15.496 1.81519 15.5333 1.68719 15.608C1.66585 15.5547 1.63919 15.5013 1.60719 15.448C1.57519 15.3947 1.54852 15.3467 1.52719 15.304C1.38852 15.0373 1.24985 14.744 1.11119 14.424C0.983188 14.0933 0.860521 13.7787 0.743188 13.48C0.636521 13.1813 0.551188 12.9467 0.487188 12.776C0.444521 12.6373 0.396521 12.4293 0.343188 12.152C0.289854 11.8747 0.236521 11.5227 0.183188 11.096C0.300521 11.1707 0.391188 11.208 0.455188 11.208C0.529854 11.208 0.599188 11.096 0.663188 10.872C0.695188 10.9147 0.753854 10.936 0.839188 10.936C0.903188 10.936 0.951188 10.9147 0.983188 10.872L1.23919 10.488L1.52719 10.584H1.54319C1.56452 10.584 1.58585 10.5733 1.60719 10.552C1.62852 10.5307 1.66052 10.5093 1.70319 10.488C1.78852 10.4347 1.85252 10.408 1.89519 10.408L1.94319 10.424C2.20985 10.552 2.38052 10.7867 2.45519 11.128C2.64719 11.9387 2.83919 12.344 3.03119 12.344C3.22319 12.344 3.44719 12.1413 3.70319 11.736C3.83119 11.5333 3.95919 11.2987 4.08719 11.032C4.22585 10.7653 4.36452 10.4667 4.50319 10.136C4.52452 10.264 4.54585 10.328 4.56719 10.328C4.62052 10.328 4.71119 10.1947 4.83919 9.928C4.97785 9.66133 5.19652 9.29333 5.49519 8.824C5.66585 8.536 5.87919 8.21067 6.13519 7.848C6.40185 7.48533 6.68452 7.112 6.98319 6.728C7.28185 6.344 7.56985 5.98133 7.84719 5.64C8.13519 5.29867 8.39119 5.00533 8.61519 4.76C8.83919 4.51467 9.00452 4.35467 9.11119 4.28C9.51652 4.00267 9.83652 3.736 10.0712 3.48C10.0605 3.55467 10.0445 3.624 10.0232 3.688C10.0125 3.74133 10.0072 3.77867 10.0072 3.8C10.0072 3.84267 10.0285 3.864 10.0712 3.864L10.5192 3.64V3.704C10.5192 3.78933 10.5405 3.832 10.5832 3.832C10.6152 3.832 10.6792 3.784 10.7752 3.688C10.8712 3.592 10.9245 3.52267 10.9352 3.48L10.9032 3.704L11.4472 3.384L11.3192 3.672C11.4899 3.55467 11.6125 3.496 11.6872 3.496C11.7299 3.496 11.7619 3.52267 11.7832 3.576C11.8045 3.61867 11.8152 3.66133 11.8152 3.704C11.8152 3.768 11.7885 3.84267 11.7352 3.928C11.6819 4.01333 11.6125 4.11467 11.5272 4.232C11.4632 4.31733 11.3565 4.44533 11.2072 4.616C11.0685 4.776 10.8552 5.016 10.5672 5.336C10.2792 5.64533 9.89519 6.07733 9.41519 6.632C9.28719 6.77067 9.08985 7.016 8.82319 7.368C8.55652 7.70933 8.25252 8.10933 7.91119 8.568C7.58052 9.016 7.24985 9.46933 6.91919 9.928C6.58852 10.3867 6.29519 10.8027 6.03919 11.176C5.78319 11.5387 5.60185 11.8107 5.49519 11.992L4.50319 13.672C4.28985 14.0347 4.11385 14.3333 3.97519 14.568C3.83652 14.792 3.72985 14.9467 3.65519 15.032C3.49519 15.224 3.31919 15.3947 3.12719 15.544L2.98319 15.464L2.85519 15.544L2.71119 15.704Z"
-                    fill="#28B463"
-                  />
-                </svg>
-                }
-                
-                {index + 1}
-              </div>
-              <div className="w-[30%] flex justify-center">{"Comp. Name"}</div>
-              <div className="w-[25%] flex justify-center">{index + 4}</div>
-              <div className="w-[15%] flex justify-center">{index + 2}</div>
-              <div className="w-[15%] flex justify-center">{index + 1000}</div>
-              <div className="w-[15%] flex justify-center">
-                <input
-                  type="checkbox"
-                  defaultChecked={false}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    const id = index; // or however you get your componentId
+          {componentInfo &&
+            componentInfo.map((component: any, index: number) => (
+              <div
+                key={index}
+                className={`flex justify-evenly items-center h-[64px] ${
+                  component.requireQuantity === component.allottedQuantity
+                    ? "bg-[#c3fabe]"
+                    : "bg-[#ffffff]"
+                }`}
+              >
+                <div className="relative w-[15%] flex justify-center">
+                  {component.requireQuantity === component.allottedQuantity && (
+                    <svg
+                      className=" absolute left-8"
+                      width="12"
+                      height="19"
+                      viewBox="0 0 12 19"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M2.71119 15.704C2.71119 15.5653 2.68452 15.496 2.63119 15.496L2.26319 15.672C2.26319 15.5973 2.22052 15.544 2.13519 15.512L2.00719 15.496C1.92185 15.496 1.81519 15.5333 1.68719 15.608C1.66585 15.5547 1.63919 15.5013 1.60719 15.448C1.57519 15.3947 1.54852 15.3467 1.52719 15.304C1.38852 15.0373 1.24985 14.744 1.11119 14.424C0.983188 14.0933 0.860521 13.7787 0.743188 13.48C0.636521 13.1813 0.551188 12.9467 0.487188 12.776C0.444521 12.6373 0.396521 12.4293 0.343188 12.152C0.289854 11.8747 0.236521 11.5227 0.183188 11.096C0.300521 11.1707 0.391188 11.208 0.455188 11.208C0.529854 11.208 0.599188 11.096 0.663188 10.872C0.695188 10.9147 0.753854 10.936 0.839188 10.936C0.903188 10.936 0.951188 10.9147 0.983188 10.872L1.23919 10.488L1.52719 10.584H1.54319C1.56452 10.584 1.58585 10.5733 1.60719 10.552C1.62852 10.5307 1.66052 10.5093 1.70319 10.488C1.78852 10.4347 1.85252 10.408 1.89519 10.408L1.94319 10.424C2.20985 10.552 2.38052 10.7867 2.45519 11.128C2.64719 11.9387 2.83919 12.344 3.03119 12.344C3.22319 12.344 3.44719 12.1413 3.70319 11.736C3.83119 11.5333 3.95919 11.2987 4.08719 11.032C4.22585 10.7653 4.36452 10.4667 4.50319 10.136C4.52452 10.264 4.54585 10.328 4.56719 10.328C4.62052 10.328 4.71119 10.1947 4.83919 9.928C4.97785 9.66133 5.19652 9.29333 5.49519 8.824C5.66585 8.536 5.87919 8.21067 6.13519 7.848C6.40185 7.48533 6.68452 7.112 6.98319 6.728C7.28185 6.344 7.56985 5.98133 7.84719 5.64C8.13519 5.29867 8.39119 5.00533 8.61519 4.76C8.83919 4.51467 9.00452 4.35467 9.11119 4.28C9.51652 4.00267 9.83652 3.736 10.0712 3.48C10.0605 3.55467 10.0445 3.624 10.0232 3.688C10.0125 3.74133 10.0072 3.77867 10.0072 3.8C10.0072 3.84267 10.0285 3.864 10.0712 3.864L10.5192 3.64V3.704C10.5192 3.78933 10.5405 3.832 10.5832 3.832C10.6152 3.832 10.6792 3.784 10.7752 3.688C10.8712 3.592 10.9245 3.52267 10.9352 3.48L10.9032 3.704L11.4472 3.384L11.3192 3.672C11.4899 3.55467 11.6125 3.496 11.6872 3.496C11.7299 3.496 11.7619 3.52267 11.7832 3.576C11.8045 3.61867 11.8152 3.66133 11.8152 3.704C11.8152 3.768 11.7885 3.84267 11.7352 3.928C11.6819 4.01333 11.6125 4.11467 11.5272 4.232C11.4632 4.31733 11.3565 4.44533 11.2072 4.616C11.0685 4.776 10.8552 5.016 10.5672 5.336C10.2792 5.64533 9.89519 6.07733 9.41519 6.632C9.28719 6.77067 9.08985 7.016 8.82319 7.368C8.55652 7.70933 8.25252 8.10933 7.91119 8.568C7.58052 9.016 7.24985 9.46933 6.91919 9.928C6.58852 10.3867 6.29519 10.8027 6.03919 11.176C5.78319 11.5387 5.60185 11.8107 5.49519 11.992L4.50319 13.672C4.28985 14.0347 4.11385 14.3333 3.97519 14.568C3.83652 14.792 3.72985 14.9467 3.65519 15.032C3.49519 15.224 3.31919 15.3947 3.12719 15.544L2.98319 15.464L2.85519 15.544L2.71119 15.704Z"
+                        fill="#28B463"
+                      />
+                    </svg>
+                  )}
 
-                    setCheckbox((prev = []) => {
-                      const exists = prev.find(
-                        (entry) => entry.componentId === id
-                      );
-                      if (exists) {
-                        return prev.map((entry) =>
-                          entry.componentId === id
-                            ? { ...entry, value: checked }
-                            : entry
+                  {index + 1}
+                </div>
+                <div className="w-[30%] flex justify-center">
+                  {component?.componentName}
+                </div>
+                <div className="w-[25%] flex justify-center">
+                  {component?.requireQuantity}
+                </div>
+                <div className="w-[15%] flex justify-center">
+                  {component?.allottedQuantity}
+                </div>
+                <div className="w-[15%] flex justify-center">
+                  {component?.availableQuantity}
+                </div>
+                <div className="w-[15%] flex justify-center">
+                  <input
+                    type="checkbox"
+                    defaultChecked={false}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      const id = component.componentId;
+
+                      setCheckbox((prev = []) => {
+                        const exists = prev.find(
+                          (entry) => entry.componentId === id
                         );
-                      } else {
-                        return [...prev, { componentId: id, value: checked }];
-                      }
-                    });
-                  }}
-                />
-                <input
-                  name={index.toString()}
-                  type="number"
-                  min="0"
-                  max="2"
-                  className="w-full h-[40px] bg-[#ffffff] border-[#D1D5DB] border-[1px] rounded-[6px] px-3 mx-5"
-                />
-              </div>
-              {/* <div className="w-[25%] flex justify-center items-center gap-4">
+                        if (exists) {
+                          return prev.map((entry) =>
+                            entry.componentId === id
+                              ? { ...entry, value: checked }
+                              : entry
+                          );
+                        } else {
+                          return [...prev, { componentId: id, value: checked }];
+                        }
+                      });
+                    }}
+                  />
+                  <input
+                    name={index.toString()}
+                    type="number"
+                    min="0"
+                    max={component.requireQuantity - component.allottedQuantity}
+                    className="w-full h-[40px] bg-[#ffffff] border-[#D1D5DB] border-[1px] rounded-[6px] px-3 mx-5"
+                  />
+                </div>
+                {/* <div className="w-[25%] flex justify-center items-center gap-4">
               <Edit to={`/vendor-management/edit-vendor/${vendor.id}`} />
               <div onClick={()=>{handleDelete(vendor.id)}} className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center">
                 <svg
@@ -168,11 +205,11 @@ export default function () {
                 </svg>
               </div>
             </div> */}
-            </div>
-          ))}
+              </div>
+            ))}
         </div>
         <div className="flex w-full justify-end mt-4 mb-0">
-          <div>
+          <div className="mr-2 disable">
             <button className=" text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
               <svg
                 width="17"
@@ -187,6 +224,23 @@ export default function () {
                 />
               </svg>
               Allot Material
+            </button>
+          </div>
+          <div>
+            <button className=" text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
+              <svg
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.1001 6.5H9.6001V2C9.6001 1.44781 9.15229 1 8.6001 1H7.6001C7.04791 1 6.6001 1.44781 6.6001 2V6.5H2.1001C1.54791 6.5 1.1001 6.94781 1.1001 7.5V8.5C1.1001 9.05219 1.54791 9.5 2.1001 9.5H6.6001V14C6.6001 14.5522 7.04791 15 7.6001 15H8.6001C9.15229 15 9.6001 14.5522 9.6001 14V9.5H14.1001C14.6523 9.5 15.1001 9.05219 15.1001 8.5V7.5C15.1001 6.94781 14.6523 6.5 14.1001 6.5Z"
+                  fill="white"
+                />
+              </svg>
+              Reset Material
             </button>
           </div>
         </div>

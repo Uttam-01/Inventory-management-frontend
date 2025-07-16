@@ -47,7 +47,7 @@ export const componentSchema = z.object({
 
   dimension: z
     .string({
-      invalid_type_error: "Dimension must be a string",
+      invalid_type_error: "Dimension must be a string"
     })
     .max(100, "Dimension can be at most 100 characters")
     .optional(),

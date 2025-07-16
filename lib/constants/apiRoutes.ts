@@ -12,4 +12,6 @@ export const API_ROUTES = {
   SIGNUP: `${baseUrl}auth/sign-up`,
   USER: `${baseUrl}users`,
   ALLOTMENT: `${baseUrl}allotment`,
+  REJECTED : `${baseUrl}rejected`,
+  STATUS : `${baseUrl}rejected`
 };
