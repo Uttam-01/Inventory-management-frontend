@@ -13,7 +13,7 @@ import RoleProtected from "@/components/RoleProtection";
 import { useDeleteInventory } from "@/lib/api/inventoryApi/useDeleteInventory";
 import { useRouter } from "next/navigation";
 import MaterialFlowNav from "@/components/layout/MaterialFlowNav";
-import { useRejectMaterial } from "@/lib/api/inventoryApi/useReject";
+import GlobalLoader from "@/components/layout/GlobalLoader";
 
 function InputBox(e: {
   label: string;
@@ -174,113 +174,12 @@ export default function () {
 
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
-      {isOpen && (
-        <div className="fixed inset-0 z-[9999] bg-[rgba(0,0,0,0.3)] pointer-events-none flex items-center justify-center border p-5">
-          <div className="bg-white shadow-lg rounded-xl w-[360px] max-w-[90%] px-6 py-8 relative pointer-events-auto">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl font-bold hover:cursor-pointer"
-            >
-              ×
-            </button>
-
-            <h2 className="text-xl font-semibold text-center text-[#0F4C81] mb-6">
-              Change Status
-            </h2>
-            <form onSubmit={handleStatusForm}>
-              <select
-                name=""
-                value={selectedStatus}
-                onChange={(e) => {
-                  setSelectedStatus(e.target.value);
-                }}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0F4C81] mb-6"
-              >
-                <option value="ORDERED">Ordered</option>
-                <option value="LOADED">Loaded</option>
-                <option value="IN_TRANSIT">In Transit</option>
-                <option value="REJECTED">Rejected</option>
-                <option value="RECIEVED">Received</option>
-              </select>
-
-              {selectedStatus === "REJECTED" && (
-                <div className="flex flex-col gap-4 mb-6">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Ordered Quantity:</span>
-                    <span className="font-medium">{toUpdate.quantity}</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
-                      Quantity to Reject
-                    </label>
-                    <input
-                      required
-                      placeholder="Only Numbers"
-                      className="h-[41px] w-[250px] bg-[#ffffff] border px-3 rounded-[8px]"
-                      name="rejectedQuantity"
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setRejectFormData((prev) => ({
-                          ...prev,
-                          quantity: value === "" ? 0 : Number(value),
-                        }));
-                      }}
-                      max={toUpdate.quantity}
-                      type="number"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label htmlFor=" font-emoji text-[#343A40] text-[14px] font-normal">
-                      Reason to Reject
-                    </label>
-                    <input
-                      required
-                      placeholder=""
-                      className="h-[41px] w-[250px] bg-[#ffffff] border px-3 rounded-[8px]"
-                      name="reason"
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setRejectFormData((prev) => ({
-                          ...prev,
-                          reason: value,
-                        }));
-                      }}
-                    />
-                  </div>
-                  <select
-                    name="rejectedType"
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0F4C81] mb-6"
-                  >
-                    <option value="SCRAP">Scrap</option>
-                    <option value="RETURN">Return</option>
-                    <option value="HOLD">Hold</option>
-                  </select>
-                </div>
-              )}
-
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="w-[48%] h-[42px] border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
-                >
-                  Cancel
-                </button>
-                <button className="w-[48%] h-[42px] bg-[#0F4C81] text-white rounded-md hover:bg-[#0e3c68] transition">
-                  Update
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <div className="w-[1404px] mx-auto flex flex-col rounded-[8px]  justify-start">
-        <div className="w-[1404px] mx-auto flex flex-col   rounded-[8px] pb-8 justify-start ">
+      <div className=" mx-auto flex flex-col rounded-[8px]  justify-start">
+        <div className=" mx-auto flex flex-col   rounded-[8px] pb-8 justify-start ">
           <MaterialFlowNav />
         </div>
 
-        <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+        <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
           <div className="text-[#0F4C81] font-bold text-[20px]">
             Material IN
           </div>
@@ -291,117 +190,113 @@ export default function () {
           <div className="text-[#343A40] text-[18px] font-bold  mt-6"></div>
 
           {isLoading ? (
-            <div>Loading....</div>
+            <GlobalLoader />
           ) : error ? (
             <div>Error occured.</div>
           ) : (
-            <div className="border-[1px] rounded-[6px] border-[#D1D5DB] mt-1 mb-6">
-              <div className="flex justify-center bg-[#E5E7EB] h-[41px] border-b-[1px] border-[#D1D5DB] items-center">
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Date
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Bill No
-                </div>
-                <div className="w-[26%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Product Name
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Vendor
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Quantity
-                </div>
-                <div className="w-[14%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Total Effective Price
-                </div>
-                <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB] text-[16px] text-[#6B7280] font-bold">
-                  Status
-                </div>
-
-                <div className="w-[11%] flex justify-center items-center   text-[16px] text-[#6B7280] font-bold h-full">
-                  Actions
-                </div>
-              </div>
-              {data.map((item: any, index: number) => (
-                <div
-                  key={index}
-                  className={`flex justify-evenly  items-center h-[50px] ${
-                    index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
-                  }  ${
-                    index === data.length - 1
-                      ? ""
-                      : "border-b-[1px] border-[#D1D5DB]"
-                  } `}
-                >
-                  <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.updatedAt.substring(0, 10)}
-                  </div>
-                  <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.billNo}
-                  </div>
-                  <div className="w-[26%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.componentName}
-                  </div>
-                  <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.vendorName}
-                  </div>
-                  <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.quantity}
-                  </div>
-                  <div className="w-[14%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    ₹{item.totalPrice}
-                  </div>
-                  <div className="w-[11%] flex justify-center items-center h-full border-r-[1px] border-[#D1D5DB]">
-                    {item.status}
-                  </div>
-                  <div className="w-[11%] flex justify-center items-center gap-4">
-                    <button
-                      onClick={() => {
-                        setIsOpen(true);
-                        setSelectedStatus(item.status);
-                        setToUpdate(item);
-                      }}
-                      className="btn border-amber-600 bg-amber-300 hover: cursor-pointer"
-                    >
-                      Update status
-                    </button>
-                    <Edit to={`/material-in/edit-material-in/${item.id}`} />
-                    <button
-                      onClick={() => {
-                        handleDelete(item.id);
-                      }}
-                      type="button"
-                      className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center"
-                    >
-                      <svg
-                        width="17"
-                        height="16"
-                        viewBox="0 0 17 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g clipPath="url(#clip0_16_2934)">
-                          <path
-                            d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
-                            fill="#DC3545"
+            <div className="overflow-x-auto rounded-lg shadow-md">
+              <table className="min-w-full border border-gray-300 divide-y divide-gray-200 rounded-lg">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      S.N.
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Bill No.
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Product Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Vendor
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Quantity
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Total Effective Price
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                      Remarks
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.map((item: any, index: number) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 border border-gray-300">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.updatedAt.substring(0, 10)}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.billNo}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.componentName}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.vendorName}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.quantity}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        ₹ {item.totalPrice}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        {item.status}
+                      </td>
+                      <td className="px-6 py-3 border border-gray-300">
+                        <div className="flex gap-2">
+                          <Edit
+                            to={`/material-in/edit-material-in/${item.id}`}
                           />
-                        </g>
-                        <defs>
-                          <clipPath id="clip0_16_2934">
-                            <rect
-                              width="16"
+                          <button
+                            onClick={() => {
+                              handleDelete(item.id);
+                            }}
+                            type="button"
+                            className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center"
+                          >
+                            <svg
+                              width="17"
                               height="16"
-                              fill="white"
-                              transform="translate(0.143311)"
-                            />
-                          </clipPath>
-                        </defs>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                              viewBox="0 0 17 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <g clipPath="url(#clip0_16_2934)">
+                                <path
+                                  d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
+                                  fill="#DC3545"
+                                />
+                              </g>
+                              <defs>
+                                <clipPath id="clip0_16_2934">
+                                  <rect
+                                    width="16"
+                                    height="16"
+                                    fill="white"
+                                    transform="translate(0.143311)"
+                                  />
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

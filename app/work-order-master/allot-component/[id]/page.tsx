@@ -86,7 +86,7 @@ export default function () {
     }, [addAllotmentMutaion.isSuccess]);
 
   return (
-    <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 pb-5 justify-start ">
+    <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 pb-5 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px] mb-5">
         Allot Material - Work Order Number #{orderId}
       </div>

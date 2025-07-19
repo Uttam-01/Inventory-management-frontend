@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/components/layout/NavbarWrapper";
@@ -23,7 +23,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const queryClient = new QueryClient();
   const pathname = usePathname();
   const pathParts = pathname.split("/").filter(Boolean);
@@ -31,18 +30,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryClientProvider client={queryClient}>
-        
         <body className={`${roboto.variable} min-h-screen`}>
-          <Navigation/>
-          <div className="flex  bg-[#F3F4F6] min-h-screen    w-screen ">
-            
-            <NavbarWrapper />
-            
-            <div className={`w-full bg-[#F3F4F6] flex  h-min px-8  pb-[100px]  ml-[256px] pt-[150px]`}>
+          <NavbarWrapper />
+          <div className="bg-[#F3F4F6] min-h-screen pl-[256px] relative h-full flex flex-col">
+            <Navigation />
+            <div className="w-full bg-[#F3F4F6] h-min px-8 pt-[100px] pb-8 grow">
               {children}
             </div>
+            {pathParts[pathParts.length - 1] === "login" ? (
+              ""
+            ) : (
+              <div className="static z-2000 bottom-0 font-sans py-2 text-[#FFFFFF] w-full text-xs py-3 flex items-center justify-center bg-[#3f4143]">
+                © 2025 Inventery Management. All rights reserved. Developed By
+                Uttam Sharma , Ankit Karodiya
+              </div>
+            )}
           </div>
-          <div className="fixed z-2000 bottom-0 font-bold font-sans py-2 text-[#FFFFFF]  w-screen flex items-center justify-center bg-[#3f4143]">© 2025 Inventery Management. All rights reserved. Developed By Uttam Sharma , Ankit Karodiya </div>
         </body>
       </QueryClientProvider>
     </html>

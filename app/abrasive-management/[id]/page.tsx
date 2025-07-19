@@ -7,6 +7,7 @@ import { useComponents } from "@/lib/api/componentApi/useComponents";
 import { useEffect, useState } from "react";
 import RoleProtected from "@/components/RoleProtection";
 import Link from "next/link";
+import GlobalLoader from "@/components/layout/GlobalLoader";
 
 export default function () {
   type Component = {
@@ -22,7 +23,7 @@ export default function () {
   const delComponent = useDeleteComponent();
   const { data, isLoading, error } = useComponents();
   if (!mounted) return null;
-  else if (isLoading) return <div>Loading.....</div>;
+  else if (isLoading) return <GlobalLoader />;
   else if (error) return <div>Error loading components.</div>;
   async function deleteComponent(id: number) {
     delComponent
@@ -33,7 +34,7 @@ export default function () {
 
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "MANAGER"]}>
-      <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+      <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
         <div className="text-[#0F4C81] font-bold text-[20px]">
           Abrasive Name
         </div>

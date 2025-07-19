@@ -4,12 +4,12 @@ import RoleProtected from "@/components/RoleProtection";
 export default function () {
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
-      <div className="w-[1404px] mx-auto flex flex-col rounded-[8px]  justify-start">
-        <div className="w-[1404px] mx-auto flex flex-col   rounded-[8px] pb-8 justify-start ">
+      <div className=" mx-auto flex flex-col rounded-[8px]  justify-start">
+        <div className=" mx-auto flex flex-col   rounded-[8px] pb-8 justify-start ">
           <MaterialFlowNav />
         </div>
 
-        <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+        <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
           <div className="text-[#0F4C81] font-bold text-[20px]">
             Cancelled Allocation List
           </div>

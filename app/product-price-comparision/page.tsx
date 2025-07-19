@@ -9,7 +9,7 @@ function Svg(){
 }
 export default function () {
   return (
-    <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] justify-start ">
+    <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] justify-start ">
       <div className="shadow w-full p-10">
         <div className="text-[#0F4C81] font-bold text-[24px] ">
           Product Price Comparison

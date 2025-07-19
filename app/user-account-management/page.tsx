@@ -5,6 +5,7 @@ import Delete from "@/components/ui/Delete";
 import { useEffect, useState } from "react";
 import { useUsers } from "@/lib/api/userApi/useUsers";
 import RoleProtected from "@/components/RoleProtection";
+import GlobalLoader from "@/components/layout/GlobalLoader";
 
 function Status(e: { status: string }) {
   return (
@@ -27,13 +28,13 @@ export default function () {
   useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useUsers();
   if (!mounted) return null;
-  else if (isLoading) return <div>Loading.....</div>;
+  else if (isLoading) return <GlobalLoader />;
   else if (error) return <div>Error loading components.</div>;
 
   console.log(data);
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN"]}>
-      <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+      <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
         <div className="text-[#0F4C81] font-bold text-[20px]">
           User Account Management
         </div>

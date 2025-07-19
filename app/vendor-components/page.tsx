@@ -5,6 +5,7 @@ import Delete from "@/components/ui/Delete";
 import { useVendorComponents } from "@/lib/api/vendor-componentApi/useVendorComponents";
 import { useEffect, useState } from "react";
 import { useVendorComponentDelete } from "@/lib/api/vendor-componentApi/useDeleteVendorComponent";
+import GlobalLoader from "@/components/layout/GlobalLoader";
 
 export default function () {
   const deleteVendorCompMutation = useVendorComponentDelete();
@@ -14,7 +15,7 @@ export default function () {
   const { data, isLoading, error } = useVendorComponents();
 
   if (!mounted) return null;
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <GlobalLoader />;
   if (error) return <div>Error loading Vendor-Components.</div>;
   console.log(data);
   type vendorComp = {
@@ -25,16 +26,15 @@ export default function () {
     vendorName: string;
   };
 
-  
-
-  function deleteVendorComp(id :number){  
-    deleteVendorCompMutation.mutateAsync(id).then(() => window.location.reload())
-    .catch(err => console.error("Error deleting Vendor:", err));
-
+  function deleteVendorComp(id: number) {
+    deleteVendorCompMutation
+      .mutateAsync(id)
+      .then(() => window.location.reload())
+      .catch((err) => console.error("Error deleting Vendor:", err));
   }
 
   return (
-    <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
+    <div className=" mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">
         Vendor Components
       </div>
@@ -80,62 +80,89 @@ export default function () {
         </div>
       </div>
 
-      <div className="border-[1px] mt-[10px] rounded-[6px] border-[#D1D5DB]">
-        <div className="flex justify-center bg-[#E5E7EB] h-[41px] items-center">
-          <div className="w-[20%] flex justify-center">VENDOR NAME</div>
-          <div className="w-[20%] flex justify-center">COMPONENT NAME</div>
-          <div className="w-[20%] flex justify-center">PRICE </div>
-          <div className="w-[20%] flex justify-center">
-            DELIVERY TIME (In Days)
-          </div>
-          <div className="w-[20%] flex justify-center">ACTIONS</div>
-        </div>
-        {data.map((unit: vendorComp, index: number) => (
-          <div
-            key={unit.id}
-            className={`flex justify-evenly  items-center h-[64px] ${
-              index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#F3F4F6]"
-            }`}
-          >
-            <div className="w-[20%] flex justify-center">{unit.vendorName}</div>
-            <div className="w-[20%] flex justify-center">
-              {unit.componentName}
-            </div>
-            <div className="w-[20%] flex justify-center">{unit.unitPrice}</div>
-            <div className="w-[20%] flex justify-center">
-              {unit.deliveryTimeInDays}
-            </div>
-            <div className="w-[20%] flex justify-center items-center gap-4">
-              <Edit to={`/vendor-components/edit-vendor-component/${unit.id}`} />
-              <button  onClick={()=>deleteVendorComp(unit.id)} type="button" className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center">
-                <svg
-                  width="17"
-                  height="16"
-                  viewBox="0 0 17 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clipPath="url(#clip0_16_2934)">
-                    <path
-                      d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
-                      fill="#DC3545"
+      <div className="overflow-x-auto rounded-lg shadow-md">
+        <table className="min-w-full border border-gray-300 divide-y divide-gray-200 rounded-lg">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                S.N.
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                Component
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                Price
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                Delivery Time (In Days)
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border border-gray-300 capitalize">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {data.map((unit: vendorComp, index: number) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="px-6 py-3 border border-gray-300">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-3 border border-gray-300">
+                  {unit.vendorName}
+                </td>
+                <td className="px-6 py-3 border border-gray-300">
+                  {unit.componentName}
+                </td>
+                <td className="px-6 py-3 border border-gray-300">
+                  {unit.unitPrice}
+                </td>
+                <td className="px-6 py-3 border border-gray-300">
+                  {unit.deliveryTimeInDays}
+                </td>
+                <td className="px-6 py-3 border border-gray-300">
+                  <div className="flex gap-2">
+                    <Edit
+                      to={`/vendor-components/edit-vendor-component/${unit.id}`}
                     />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_16_2934">
-                      <rect
-                        width="16"
+                    <button
+                      onClick={() => deleteVendorComp(unit.id)}
+                      type="button"
+                      className="hover:cursor-pointer p-2 rounded-[5px] bg-[#E0F2F7] flex items-center justify-center"
+                    >
+                      <svg
+                        width="17"
                         height="16"
-                        fill="white"
-                        transform="translate(0.143311)"
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </button>
-            </div>
-          </div>
-        ))}
+                        viewBox="0 0 17 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g clipPath="url(#clip0_16_2934)">
+                          <path
+                            d="M14.6433 1.00001H10.8933L10.5996 0.41563C10.5373 0.290697 10.4415 0.185606 10.3228 0.11218C10.2041 0.0387537 10.0673 -9.46239e-05 9.92769 5.47897e-06H6.35581C6.21655 -0.00052985 6.07996 0.0381736 5.96169 0.111682C5.84341 0.18519 5.74823 0.290529 5.68706 0.41563L5.39331 1.00001H1.64331C1.5107 1.00001 1.38353 1.05268 1.28976 1.14645C1.19599 1.24022 1.14331 1.3674 1.14331 1.50001V2.50001C1.14331 2.63261 1.19599 2.75979 1.28976 2.85356C1.38353 2.94733 1.5107 3.00001 1.64331 3.00001H14.6433C14.7759 3.00001 14.9031 2.94733 14.9969 2.85356C15.0906 2.75979 15.1433 2.63261 15.1433 2.50001V1.50001C15.1433 1.3674 15.0906 1.24022 14.9969 1.14645C14.9031 1.05268 14.7759 1.00001 14.6433 1.00001ZM2.80581 14.5938C2.82966 14.9746 2.99774 15.332 3.27583 15.5932C3.55392 15.8545 3.92112 16 4.30269 16H11.9839C12.3655 16 12.7327 15.8545 13.0108 15.5932C13.2889 15.332 13.457 14.9746 13.4808 14.5938L14.1433 4.00001H2.14331L2.80581 14.5938Z"
+                            fill="#DC3545"
+                          />
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_16_2934">
+                            <rect
+                              width="16"
+                              height="16"
+                              fill="white"
+                              transform="translate(0.143311)"
+                            />
+                          </clipPath>
+                        </defs>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

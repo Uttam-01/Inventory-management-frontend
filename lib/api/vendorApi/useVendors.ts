@@ -14,6 +14,6 @@ export const useVendors = (filters?: { search?: string , city? : string}) => {
 
 
 async function apiReq(filters?: { search?: string , city? : string}) {
-  return authRequest({ url: `${API_ROUTES.VENDOR}?name=${filters?.search ?? ""}&locationInStore=${filters?.city ?? ""}`, method: "GET" });
+  return authRequest({ url: `${API_ROUTES.VENDOR}?name=${filters?.search ?? ""}&city=${filters?.city ?? ""}`, method: "GET" });
   
 }
