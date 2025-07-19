@@ -4,6 +4,8 @@ import { useAddAllotment } from "@/lib/api/wokOrderApi/useAddAllotment";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export default function () {
   const [mounted, setMounted] = useState(false);
@@ -13,6 +15,8 @@ export default function () {
   const [orderId, setOrderId] = useState<any>();
   const [componentInfo, setComponentInfo] = useState<any>();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   useEffect(() => {
     const getInfo = async () => {
@@ -69,7 +73,17 @@ export default function () {
     };
     console.log(finalPayload);
     addAllotmentMutaion.mutate(finalPayload);
+    queryClient.invalidateQueries({ queryKey: ["allotment"] });
   }
+  useEffect(() => {
+      if (addAllotmentMutaion.isSuccess) {
+        const timeout = setTimeout(() => {
+          router.push("/work-order-master");
+        }, 1000);
+  
+        return () => clearTimeout(timeout);
+      }
+    }, [addAllotmentMutaion.isSuccess]);
 
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 pb-5 justify-start ">
@@ -106,7 +120,7 @@ export default function () {
           {componentInfo &&
             componentInfo.map((component: any, index: number) => (
               <div
-                key={index}
+                key={component.componentId}
                 className={`flex justify-evenly items-center h-[64px] ${
                   component.requireQuantity === component.allottedQuantity
                     ? "bg-[#c3fabe]"
@@ -169,7 +183,7 @@ export default function () {
                     }}
                   />
                   <input
-                    name={index.toString()}
+                    name={component.componentId.toString()}
                     type="number"
                     min="0"
                     max={component.requireQuantity - component.allottedQuantity}
@@ -208,9 +222,26 @@ export default function () {
               </div>
             ))}
         </div>
-        <div className="flex w-full justify-end mt-4 mb-0">
-          <div className="mr-2 disable">
-            <button className=" text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
+        <div className="flex w-full justify-between items-center mt-4 mb-0">
+          <div className="flex gap-5">
+             {addAllotmentMutaion.isSuccess && (
+            <div className="text-green-600 w-full">
+              Added Work Order Successfully.
+            </div>
+          )}
+          {addAllotmentMutaion.error && (
+            <div className="text-red-500 text-sm mt-2">
+              {(addAllotmentMutaion.error as any)?.response?.data?.message ??
+                (addAllotmentMutaion.error as any)?.response?.data?.error ??
+                addAllotmentMutaion.error.message ??
+                "Something went wrong"}
+            </div>
+          )}
+
+          </div>
+          <div className="flex gap-5">
+            <div className="mr-2 disable">
+            <button className="hover:cursor-pointer text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
               <svg
                 width="17"
                 height="16"
@@ -227,7 +258,7 @@ export default function () {
             </button>
           </div>
           <div>
-            <button className=" text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
+            <button className=" hover:cursor-pointer text-[#FFFFFF] text-[16px] font-sans font-bold h-[50px] px-5 rounded-[6px] bg-[#22C55E] flex justify-center items-center gap-2 my-5">
               <svg
                 width="17"
                 height="16"
@@ -243,6 +274,8 @@ export default function () {
               Reset Material
             </button>
           </div>
+          </div>
+          
         </div>
       </form>
       <pre></pre>

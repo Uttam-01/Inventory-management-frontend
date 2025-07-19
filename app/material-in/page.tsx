@@ -113,7 +113,9 @@ export default function () {
     const formData = Object.fromEntries(
       new FormData(e.currentTarget).entries()
     );
+    console.log("sel.", selectedStatus)
     if (selectedStatus === "REJECTED") {
+      console.log("in rrejected")
       const finalData = {
         ...formData,
         inventoryId: toUpdate.id,
@@ -130,7 +132,6 @@ export default function () {
 
         console.log("Success:", data);
       } catch (err: any) {
-  
         if (err.response) {
           console.error("Backend Error:", err.response.data);
           alert(err.response.data?.message || "Something went wrong");
@@ -142,14 +143,14 @@ export default function () {
         setIsOpen(false);
       }
     } else {
+      console.log("in else")
       const finalData = {
-        ...formData,
-        inventoryId: toUpdate.id,
+        status : selectedStatus
       };
       try {
         const data = await authRequest({
-          url: `${API_ROUTES.STATUS}/${toUpdate.Id}`,
-          method: "PUT",
+          url: `${API_ROUTES.STATUS}/${toUpdate.id}`,
+          method: "PATCH",
           data: finalData,
           headers: {
             "Content-Type": "application/json",
@@ -158,7 +159,6 @@ export default function () {
 
         console.log("Success:", data);
       } catch (err: any) {
-        
         if (err.response) {
           console.error("Backend Error:", err.response.data);
           alert(err.response.data?.message || "Something went wrong");
@@ -190,7 +190,10 @@ export default function () {
             <form onSubmit={handleStatusForm}>
               <select
                 name=""
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                value={selectedStatus}
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value);
+                }}
                 className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0F4C81] mb-6"
               >
                 <option value="ORDERED">Ordered</option>
@@ -356,6 +359,7 @@ export default function () {
                     <button
                       onClick={() => {
                         setIsOpen(true);
+                        setSelectedStatus(item.status);
                         setToUpdate(item);
                       }}
                       className="btn border-amber-600 bg-amber-300 hover: cursor-pointer"

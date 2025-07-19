@@ -53,19 +53,18 @@ function Status(e: { index: number; status: string }) {
 export default function () {
   const [mounted, setMounted] = useState(false);
   const deleteWorkOrder = useDeleteWorkOrder();
-  useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useWorkOrder();
   useEffect(() => setMounted(true), []);
   const handleDelete = (id: number) => {
     deleteWorkOrder
       .mutateAsync(id)
       .then(() => window.location.reload())
-      .catch((err) => console.error("Error deleting Vendor:", err));
+      .catch((err) => console.error("Error deleting Order:", err));
   };
 
   if (!mounted) return null;
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading Vendors.</div>;
+  if (error) return <div>Error loading Orders.</div>;
   return (
     <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
       <div className="text-[#0F4C81] font-bold text-[20px]">

@@ -69,7 +69,7 @@ export default function () {
         </div>
         <div className="w-[1404px] mx-auto flex flex-col bg-[#ffffff] rounded-[8px] p-8 justify-start ">
           <div className="text-[#0F4C81] font-bold text-[20px]">
-            Work Order Master
+            Alloted Material
           </div>
           <div className="text-[#343A40] bg-[#DBEAFE] flex px-4 rounded-[8px] mt-5 mb-3 text-[14px] font-normal  font-emoji h-[54px] items-center">
             This section contains all active work orders for tracking and

@@ -1,7 +1,18 @@
+"use client"
 import MaterialFlowNav from "@/components/layout/MaterialFlowNav";
 import RoleProtected from "@/components/RoleProtection";
+import { useRejected } from "@/lib/api/useRejected";
+import { useEffect, useState } from "react";
 
 export default function () {
+  const [mounted , setMounted] = useState(false)
+  useEffect(() => setMounted(true), []);
+    const { data, isLoading, error } = useRejected();
+
+    if (!mounted) return null;
+    if(isLoading) return <div>Loading
+    </div>
+    console.log(data)
   return (
     <RoleProtected allowedRoles={["SUPER_ADMIN" , "ADMIN"]}>
     <div className="w-[1404px] mx-auto flex flex-col rounded-[8px]  justify-start">

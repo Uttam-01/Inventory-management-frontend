@@ -13,5 +13,5 @@ export const API_ROUTES = {
   USER: `${baseUrl}users`,
   ALLOTMENT: `${baseUrl}allotment`,
   REJECTED : `${baseUrl}rejected`,
-  STATUS : `${baseUrl}rejected`
+  STATUS : `${baseUrl}status`
 };
