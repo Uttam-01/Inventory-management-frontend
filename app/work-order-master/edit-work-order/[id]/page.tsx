@@ -44,7 +44,7 @@ export default function () {
   useEffect(() => setMounted(true), []);
   const { data, isLoading, error } = useMachines();
   useEffect(() => {
-    if (data) setComponents(data);
+    if (data) setComponents(data.content);
   }, [data]);
   useEffect(() => {
     const getInfo = async () => {
@@ -52,13 +52,13 @@ export default function () {
       const workOrderId = pathParts[pathParts.length - 1];
 
       try {
-        const workData = await authRequest({
+        const workdata = await authRequest({
           url: `${API_ROUTES.WORKORDER}/${workOrderId}`,
           method: "GET",
         });
-        setStatus(workData?.status);
-        console.log("Fetched work-order info:", workData);
-        setWorkOrderInfo(workData);
+        setStatus(workdata?.status);
+
+        setWorkOrderInfo(workdata);
       } catch (err) {
         console.error("Failed to fetch work-order info:", err);
       }
@@ -94,16 +94,16 @@ export default function () {
   }, [updateWorkOrderMutation.isSuccess]);
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = Object.fromEntries(
+    const formdata = Object.fromEntries(
       new FormData(e.currentTarget).entries()
     );
-    const finalData = {
-      ...formData,
+    const finaldata = {
+      ...formdata,
       machineId: selected.id,
     };
-    console.log("formData" , formData);
-    console.log("finalData" , finalData);
-    // const result = componentSchema.safeParse(formData);
+    console.log("formdata" , formdata);
+    console.log("finaldata.content" , finaldata );
+    // const result = componentSchema.safeParse(formdata);
     // if (!result.success) {
     //   const errors: { [key: string]: string } = {};
     //   result.error.errors.forEach((err) => {
@@ -118,11 +118,10 @@ export default function () {
     // setFormErrors({});
     const pathParts = pathname.split("/").filter(Boolean);
     const workOrderId = pathParts[pathParts.length - 1];
-    updateWorkOrderMutation.mutate({ reqData: finalData, id: Number(workOrderId)});
+    updateWorkOrderMutation.mutate({ reqData: finaldata, id: Number(workOrderId)});
   }
 
-  return (
-    <div
+      <div
       className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]"
       style={{ boxShadow: "0px 10px 15px -3px #0000001A" }}
     >
@@ -272,8 +271,8 @@ export default function () {
         )}
         {updateWorkOrderMutation.error && (
           <div className="text-red-500 text-sm mt-2">
-            {(updateWorkOrderMutation.error as any)?.response?.data?.message ??
-              (updateWorkOrderMutation.error as any)?.response?.data?.error ??
+            {(updateWorkOrderMutation.error as any)?.response?.data.content?.message ??
+              (updateWorkOrderMutation.error as any)?.response?.data.content?.error ??
               updateWorkOrderMutation.error.message ??
               "Something went wrong"}
           </div>
@@ -291,5 +290,5 @@ export default function () {
         </div>
       </form>
     </div>
-  );
+  
 }

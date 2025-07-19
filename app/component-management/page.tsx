@@ -21,9 +21,9 @@ export default function () {
   const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
   const [filters, setFilters] = useState<{
-    searchBar?: string;
-    locationInStore?: string;
-  }>({ searchBar: "", locationInStore: "" });
+    keyword : string,
+    page : number,
+  }>({ keyword: "", page: 0 });
   useEffect(() => setMounted(true), []);
   const delComponent = useDeleteComponent();
   const { data, isLoading, error } = useComponents(filters);
@@ -54,18 +54,18 @@ export default function () {
           />
 
           <div className="flex gap-4">
-            <div className="relative h-[50px] w-[255px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
+            <div className="relative h-[50px] w-[455px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
               <input
                 type="text"
                 placeholder="Search Components..."
-                className="h-[50px] w-[255px] px-10 rounded-[6px]"
+                className="h-[50px] w-[455px] px-10 rounded-[6px]"
                 onChange={(e) => {
                   setFilters((prev) => ({
                     ...prev,
-                    searchBar: e.target.value,
+                    keyword: e.target.value,
                   }));
                 }}
-                value={filters.searchBar}
+                value={filters.keyword}
               />
               <svg
                 className="absolute top-4 left-3"
@@ -93,7 +93,7 @@ export default function () {
                 </defs>
               </svg>
             </div>
-            <select
+            {/* <select
               className="h-[50px] w-[135px] px-3 flex items-center justify-center text-[#B2B2B2] border-[#D1D5DB] border-[1px] rounded-[6px]"
               name=""
               id=""
@@ -140,7 +140,7 @@ export default function () {
               <option className="" value="">
                 Sort By
               </option>
-            </select>
+            </select> */}
           </div>
         </div>
         {isLoading ? (
@@ -179,7 +179,7 @@ export default function () {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.map((component: Component, index: number) => (
+                {data.content.map((component: Component, index: number) => (
                   <tr
                     key={index}
                     className={

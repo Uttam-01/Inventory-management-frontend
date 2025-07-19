@@ -30,10 +30,14 @@ export default function () {
   const [mounted, setMounted] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   useEffect(() => setMounted(true), []);
-  const { data, isLoading, error } = useMachines();
+  const {data, isLoading, error } = useMachines();
+
+  
   useEffect(() => {
-    if (data) setComponents(data);
+    if (data) setComponents(data.content);
   }, [data]);
+
+
   const filteredComponents = components.filter((component) =>
     (component.name ?? component.displayName)
       .toLowerCase()
@@ -51,15 +55,15 @@ export default function () {
   }, [addWorkOrderMutation.isSuccess]);
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = Object.fromEntries(
+    const formdata = Object.fromEntries(
       new FormData(e.currentTarget).entries()
     );
-    const finalData = {
-      ...formData,
+    const finaldata = {
+      ...formdata,
       machineId: selected.id,
     };
-    // console.log(formData);
-    // const result = componentSchema.safeParse(formData);
+    // console.log(formdata.content);
+    // const result = componentSchema.safeParse(formdata.content);
     // if (!result.success) {
     //   const errors: { [key: string]: string } = {};
     //   result.error.errors.forEach((err) => {
@@ -72,7 +76,7 @@ export default function () {
     // console.log(formErrors);
 
     // setFormErrors({});
-    addWorkOrderMutation.mutate(finalData);
+    addWorkOrderMutation.mutate(finaldata );
   }
 
   return (
@@ -205,8 +209,8 @@ export default function () {
           )}
           {addWorkOrderMutation.error && (
             <div className="text-red-500 text-sm mt-2">
-              {(addWorkOrderMutation.error as any)?.response?.data?.message ??
-                (addWorkOrderMutation.error as any)?.response?.data?.error ??
+              {(addWorkOrderMutation.error as any)?.response?.data.content?.message ??
+                (addWorkOrderMutation.error as any)?.response?.data.content?.error ??
                 addWorkOrderMutation.error.message ??
                 "Something went wrong"}
             </div>

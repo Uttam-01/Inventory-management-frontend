@@ -15,9 +15,10 @@ export default function () {
   };
   const deleteVendor = useDeleteVendor();
   const [mounted, setMounted] = useState(false);
-  const [filters, setFilters] = useState<{ search?: string; city?: string }>({
+  const [filters, setFilters] = useState<{ search?: string; city?: string ; page?: number}>({
     search: "",
     city: "",
+    page : 0,
   });
   useEffect(() => setMounted(true), []);
 
@@ -154,7 +155,7 @@ export default function () {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {data.map((vendor: Vendor, index: number) => (
+              {(data.content).map((vendor: Vendor, index: number) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-6 py-3 border border-gray-300">
                     {index + 1}

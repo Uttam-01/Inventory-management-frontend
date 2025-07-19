@@ -21,8 +21,12 @@ type Machine = {
 export default function () {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+   const [filters, setFilters] = useState<{ keyword?: string; page?: number}>({
+    keyword: "",
+    page : 0,
+  });
 
-  const { data, isLoading, error } = useMachines();
+  const { data, isLoading, error } = useMachines(filters);
   console.log(data);
   const delMachine = useDeleteMachine();
   if (!mounted) return null;
@@ -51,8 +55,11 @@ export default function () {
           <div className="relative h-[50px] w-[444px] flex items-center justify-center border-[#D1D5DB] border-[1px] rounded-[6px]">
             <input
               type="text"
-              placeholder="Search Machines..."
+              placeholder="Search..."
               className="h-[50px] w-[444px] px-10 rounded-[6px]"
+               onChange={(e) => {
+                setFilters((prev) => ({ ...prev, keyword: e.target.value }));
+              }}
             />
             <svg
               className="absolute top-4 left-3"
@@ -114,7 +121,7 @@ export default function () {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.map((machine: Machine, index: number) => (
+                {data.content.map((machine: Machine, index: number) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-3 border border-gray-300">
                       {index + 1}

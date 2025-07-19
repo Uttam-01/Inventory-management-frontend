@@ -3,37 +3,17 @@ import { authRequest } from "../auth";
 import { useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "../../constants/apiRoutes";
 import axios from "axios";
-export const useMachines = () => {
+export const useMachines = (filters?: { keyword?: string, page? : number}) => {
   return useQuery({
-    queryKey: ["machines"],
-    queryFn: apiReq,
+    queryKey: ["machines" , filters],
+    queryFn: ()=>apiReq(filters),
     enabled: typeof window !== 'undefined',
   });
 };
 
 
 
-async function apiReq() {
-  return authRequest({ url: API_ROUTES.MACHINES, method: "GET" });
+async function apiReq(filters?: { keyword?: string, page? : number}) {
+  return authRequest({ url: `${API_ROUTES.MACHINES}?page=${filters?.page?.toString() ?? "0"}&keyword=${filters?.keyword ?? ""}`, method: "GET" });
   
 }
-
-
-// export async function useMachines(){
-//   let accessToken = localStorage.getItem("accessToken");
-//   console.log(`Bearer ${accessToken}`)
-//     const res = await fetch(`${API_ROUTES.MACHINES}`,{
-//       method: "GET",
-//       headers: {
-//         Authorization: `Bearer ${accessToken}`,
-//         'Content-Type': 'application/json'
-//       },
-
-//       // credentials: 'include' 
-      
-    
-//     });
-//     const data = await res.json();
-//     console.log(data);
-//     return data;
-// }

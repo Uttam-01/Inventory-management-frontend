@@ -5,6 +5,9 @@ import { useComponents } from "@/lib/api/componentApi/useComponents";
 import { useAddVendorComponent } from "@/lib/api/vendor-componentApi/useAddVendorComponent";
 import { VendorComponent, vendorComponentSchema } from "@/lib/schemas";
 import { useVendors } from "@/lib/api/vendorApi/useVendors";
+import GlobalLoader from "@/components/layout/GlobalLoader";
+import ComponentDropdown from "@/components/layout/ComponentsDropdown";
+import VendorDropdown from "@/components/layout/VendorDropdown";
 
 function InputBox(e: {
   label: string;
@@ -33,63 +36,26 @@ function InputBox(e: {
 }
 
 export default function () {
-  const [components, setComponents] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [vendors, setVendors] = useState<any[]>([]);
-  const [searchVendor, setSearchVendor] = useState("");
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
-  const [VendorOpen, setVendorOpen] = useState<boolean>(false);
-  const [mounted, setMounted] = useState(false);
-  const [vendorMounted, setvendorMounted] = useState(false);
   const [price, setPrice] = useState<number>();
   const [delTime, setDelTime] = useState<string>();
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  useEffect(() => setMounted(true), []);
-  useEffect(() => setvendorMounted(true), []);
-  const { data, isLoading, error } = useComponents();
-  const {
-    data: Vendors,
-    isLoading: isVendorLoading,
-    error: vendorError,
-  } = useVendors();
-  useEffect(() => {
-    if (data) setComponents(data);
-  }, [data]);
-
-  useEffect(() => {
-    if (Vendors) setVendors(Vendors);
-  }, [Vendors]);
-
-  const filteredComponents = components.filter((component) =>
-    component.displayName.toLowerCase().includes(search.toLowerCase())
-  );
-  const filteredVendors = vendors.filter((vendor) =>
-    vendor.name.toLowerCase().includes(searchVendor.toLowerCase())
-  );
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const addVendorComponent = useAddVendorComponent();
-
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log("sdfg", selected);
     if (!selectedVendor?.id || !selected?.id) {
-      setFormErrors({
-        vendorId: "Vendor is required",
-        componentId: "Component is required",
-      });
-
+      setFormErrors((prev) => ({ ...prev, vendorId: "Vendor is required" , componentId : "Component is required" }));
       console.log(formErrors);
       return;
     }
-    console.log("aeacf", price);
-
     const reqData = {
       componentId: selected.id,
       vendorId: selectedVendor.id,
       unitPrice: Number(price),
       deliveryTimeInDays: delTime,
     };
-
     const result = vendorComponentSchema.safeParse(reqData);
     if (!result.success) {
       const errors: { [key: string]: string } = {};
@@ -100,17 +66,14 @@ export default function () {
       console.log(errors);
       return;
     }
-
     setFormErrors({});
     addVendorComponent.mutate(result.data);
   }
-
   if (addVendorComponent.isSuccess) return <p>Saved successfully!</p>;
-  if (addVendorComponent.isError){
-    console.log("->>>>" , addVendorComponent.error)
+  if (addVendorComponent.isError) {
+    console.log("->>>>", addVendorComponent.error);
     return <p>This component is already assigned to the vendor.</p>;
-  } 
-
+  }
   return (
     <div
       className="w-[766px] mx-auto p-8 bg-[#ffffff] rounded-[8px]"
@@ -125,79 +88,17 @@ export default function () {
       <form onSubmit={onSubmit}>
         <div className="mt-[25px]">
           <div className="flex  flex-wrap gap-x-6 gap-y-8 mt-[10px]">
-            <div className="relative flex flex-col  w-[338px]">
-              <button
-                type="button"
-                onClick={() => setIsOpen(isOpen ? false : true)}
-                className="h-[50px] w-full border-[1px] border-[#D1D5DB] flex items-center justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
-              >
-                {selected ? selected.displayName : "Component Name"}
-                <svg
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M7.55713 10L12.5571 15L17.5571 10"
-                    stroke="#B2B2B2"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              {formErrors.componentId && (
-                <span className="text-red-500 text-xs">
-                  {formErrors.componentId}
-                </span>
-              )}
-
-              <div
-                className={`${
-                  isOpen ? "block" : "hidden"
-                } absolute top-12 bg-[#FFFFFF] z-10 flex flex-col w-full border-[1px] border-[#D1D5DB] h-[400px]  items-start justify-between  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]`}
-              >
-                {!mounted ? null : isLoading ? (
-                  <div>Loading...</div>
-                ) : error ? (
-                  <div>Error loading components.</div>
-                ) : (
-                  <div className="w-full">
-                    <input
-                      type="text"
-                      placeholder="Search components..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="border border-gray-300 rounded h-[50px] p-2 w-full my-2"
-                    />
-                    <ul className="  w-full h-[300px] overflow-y-auto bg-white ">
-                      {filteredComponents.length === 0 && (
-                        <li className="p-2 text-gray-400">
-                          No components found
-                        </li>
-                      )}
-                      {filteredComponents.map((component, i) => (
-                        <li
-                          key={component.id ? component.id : i}
-                          className={`p-2 cursor-pointer hover:bg-blue-100 ${
-                            selected === component.id ? "bg-blue-50" : ""
-                          }`}
-                          onClick={() => {
-                            setSelected(component);
-                            setIsOpen(false);
-                          }}
-                        >
-                          {component.displayName}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="relative flex flex-col  w-[338px]">
+            <ComponentDropdown
+              selected={selected}
+              setSelected={setSelected}
+              formErrors={formErrors}
+            />
+            <VendorDropdown
+              selected={selectedVendor}
+              setSelected={setSelectedVendor}
+              formErrors={formErrors}
+            />
+            {/* <div className="relative flex flex-col  w-[338px]">
               <button
                 type="button"
                 onClick={() => setVendorOpen(VendorOpen ? false : true)}
@@ -233,7 +134,7 @@ export default function () {
               >
                 {!vendorMounted ? null : isVendorLoading ? (
                   <div>Loading...</div>
-                ) : vendorError ? (
+                ) : vendorError ? (displayN
                   <div>Error loading Vendors.</div>
                 ) : (
                   <div className="w-full">
@@ -268,7 +169,7 @@ export default function () {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             <div className="relative flex flex-col">
               <label
                 htmlFor=""
@@ -277,7 +178,7 @@ export default function () {
                 Per Unit Price
               </label>
               <input
-                name="unotPrice"
+                name="unitPrice"
                 className="h-[50px] w-[338px] border-[1px] border-[#D1D5DB]  rounded-[6px] px-3 shadow-[0px_0px_0px_0px_#0000001A,0px_0px_0px_0px_#0000001A,0px_1px_2px_0px_#0000000D]"
                 type="text"
                 placeholder="Per Unit Price"
@@ -313,7 +214,7 @@ export default function () {
         </div>
 
         <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
-          <div className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center">
+          <div className="border-[#6B7280] hover:cursor-pointer h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px]  text-[#6B7280] text-[16px] font-normal flex items-center justify-center">
             Cancel
           </div>
           <button className="hover:cursor-pointer h-[42px]  rounded-[8px] w-[200px]  text-[#FFFFFF] bg-[#0F4C81] text-[16px] text-emoji font-normal flex items-center justify-center">
