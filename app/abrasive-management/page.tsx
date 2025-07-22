@@ -1,9 +1,9 @@
 "use client";
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
-import { useDeleteComponent } from "@/lib/api/componentApi/useDeleteComponent";
+import { useDeleteComponent } from "@/lib/hooks/componentApi/useDeleteComponent";
 
-import { useComponents } from "@/lib/api/componentApi/useComponents";
+import { useComponents } from "@/lib/hooks/componentApi/useComponents";
 import { useEffect, useState } from "react";
 import RoleProtected from "@/components/RoleProtection";
 import Link from "next/link";
@@ -72,7 +72,7 @@ export default function () {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {data.map((component: Component, index: number) => (
+              {data.content.map((component: Component, index: number) => (
                 <tr
                   key={index}
                   className={

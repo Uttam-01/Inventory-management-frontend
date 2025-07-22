@@ -1,6 +1,6 @@
 "use client";
-import { authRequest } from "@/lib/api/auth";
-import { useAddAllotment } from "@/lib/api/wokOrderApi/useAddAllotment";
+import { authRequest } from "@/lib/hooks/auth";
+import { useAddAllotment } from "@/lib/hooks/wokOrderApi/useAddAllotment";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -191,7 +191,7 @@ export default function () {
                   />
                 </div>
                 {/* <div className="w-[25%] flex justify-center items-center gap-4">
-              <Edit to={`/vendor-management/edit-vendor/${vendor.id}`} />
+              <Edit to={`/vendor/vendor-management/edit-vendor/${vendor.id}`} />
               <div onClick={()=>{handleDelete(vendor.id)}} className="hover:cursor-pointer w-[35px] h-[40px] rounded-[5px] bg-[#E0F2F7] flex items-center justify-center">
                 <svg
                   width="17"

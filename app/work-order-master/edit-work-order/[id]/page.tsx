@@ -1,8 +1,8 @@
 "use client";
-import { authRequest } from "@/lib/api/auth";
-import { useMachines } from "@/lib/api/machineApi/useMachines";
-import { useAddWorkOrder } from "@/lib/api/wokOrderApi/useAddWorkOrder";
-import { useUpdateWorkOrder } from "@/lib/api/wokOrderApi/useUpdateWorkOrder";
+import { authRequest } from "@/lib/hooks/auth";
+import { useMachines } from "@/lib/hooks/machineApi/useMachines";
+import { useAddWorkOrder } from "@/lib/hooks/wokOrderApi/useAddWorkOrder";
+import { useUpdateWorkOrder } from "@/lib/hooks/wokOrderApi/useUpdateWorkOrder";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

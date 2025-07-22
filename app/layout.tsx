@@ -17,6 +17,8 @@ const roboto = Roboto({
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import GlobalLoaderB from "@/components/layout/GlobalLoaderB";
 
 export default function RootLayout({
   children,
@@ -35,12 +37,13 @@ export default function RootLayout({
           <div className="bg-[#F3F4F6] min-h-screen pl-[256px] relative h-full flex flex-col">
             <Navigation />
             <div className="w-full bg-[#F3F4F6] h-min px-8 pt-[100px] pb-8 grow">
-              {children}
+              <GlobalLoaderB />
+              <ErrorBoundary>{children}</ErrorBoundary>
             </div>
             {pathParts[pathParts.length - 1] === "login" ? (
               ""
             ) : (
-              <div className="static z-2000 bottom-0 font-sans py-2 text-[#FFFFFF] w-full text-xs py-3 flex items-center justify-center bg-[#3f4143]">
+              <div className="static z-2000 bottom-0 font-sans  text-[#FFFFFF] w-full text-xs py-3 flex items-center justify-center bg-[#3f4143]">
                 © 2025 Inventery Management. All rights reserved. Developed By
                 Uttam Sharma , Ankit Karodiya
               </div>

@@ -11,21 +11,21 @@ function Navbar() {
             Store Manager
           </div>
           <SidebarOption to={"/dashboard"} name="Dashboard" />
-          <SidebarOption to={"/machine-management"} name="Machine Management" />
+          <SidebarOption to={"/inventory/machine-management"} name="Machine Management" />
           <SidebarOption
-            to={"/component-management"}
+            to={"/inventory/component-management"}
             name="Component Management"
           />
-          <SidebarOption to={"/vendor-management"} name="Vendor Management" />
+          <SidebarOption to={"/vendor/vendor-management"} name="Vendor Management" />
           <SidebarOption
             to={"/work-order-master"}
             name="Work Order Management"
           />
-          <SidebarOption to={"/material-in"} name="Material IN" />
-          <SidebarOption to={"/material-out"} name="Material OUT" />
-          <SidebarOption to={"/allotted-material"} name="Allotted Material" />
+          <SidebarOption to={"/material/material-in"} name="Material IN" />
+          <SidebarOption to={"/material/material-out"} name="Material OUT" />
+          <SidebarOption to={"/material/allotted-material"} name="Allotted Material" />
           <SidebarOption
-            to={"/cancelled-allocated-material"}
+            to={"/material/cancelled-allocated-material"}
             name="Cancelled Allocated Material"
           />
         </>
@@ -46,18 +46,18 @@ function Navbar() {
             name="Dashboard"
             iconName="meteor-icons:home"
           />
-          <SidebarOption to={"/machine-management"} name="Machine Management" iconName="fluent-emoji-high-contrast:up-right-arrow" />
+          <SidebarOption to={"/inventory/machine-management"} name="Machine Management" iconName="fluent-emoji-high-contrast:up-right-arrow" />
           <SidebarOption
-            to={"/component-management"}
+            to={"/inventory/component-management"}
             name="Component Management" iconName="fluent-emoji-high-contrast:up-right-arrow"
           />
-          <SidebarOption to={"/vendor-management"} name="Vendor Management" iconName="fluent-emoji-high-contrast:up-right-arrow" />
+          <SidebarOption to={"/vendor/vendor-management"} name="Vendor Management" iconName="fluent-emoji-high-contrast:up-right-arrow" />
           <SidebarOption
             to={"/work-order-master"}
             name="Work Order Management" iconName="fluent-emoji-high-contrast:up-right-arrow"
           />
-          <SidebarOption to={"/vendor-components"} name="Vendor-Components" iconName="fluent-emoji-high-contrast:up-right-arrow" />
-          <SidebarOption to={"/material-in"} name="Material Flow" iconName="fluent-emoji-high-contrast:up-right-arrow" />
+          <SidebarOption to={"/vendor/vendor-components"} name="Vendor-Components" iconName="fluent-emoji-high-contrast:up-right-arrow" />
+          <SidebarOption to={"/material/material-in"} name="Material Flow" iconName="fluent-emoji-high-contrast:up-right-arrow" />
           <SidebarOption to={"/not-completed"} name="Labour Master" iconName="fluent-emoji-high-contrast:up-right-arrow" />
           <SidebarOption
             to={"/product-price-comparision"}

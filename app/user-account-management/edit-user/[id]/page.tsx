@@ -1,10 +1,10 @@
 "use client";
 
 import RoleProtected from "@/components/RoleProtection";
-import { authRequest } from "@/lib/api/auth";
-import { useAddComponents } from "@/lib/api/componentApi/useAddComponents";
-import { useAddUser } from "@/lib/api/userApi/useAddUser";
-import { useUpdateUser } from "@/lib/api/userApi/useUpdateUser";
+import { authRequest } from "@/lib/hooks/auth";
+import { useAddComponents } from "@/lib/hooks/componentApi/useAddComponents";
+import { useAddUser } from "@/lib/hooks/userApi/useAddUser";
+import { useUpdateUser } from "@/lib/hooks/userApi/useUpdateUser";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import { componentSchema } from "@/lib/schemas/component.schema";
 import { userSchema } from "@/lib/schemas/user.schema";

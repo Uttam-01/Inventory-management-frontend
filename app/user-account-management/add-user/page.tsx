@@ -1,8 +1,8 @@
 "use client";
 
 import RoleProtected from "@/components/RoleProtection";
-import { useAddComponents } from "@/lib/api/componentApi/useAddComponents";
-import { useAddUser } from "@/lib/api/userApi/useAddUser";
+import { useAddComponents } from "@/lib/hooks/componentApi/useAddComponents";
+import { useAddUser } from "@/lib/hooks/userApi/useAddUser";
 import { componentSchema } from "@/lib/schemas/component.schema";
 import { userSchema } from "@/lib/schemas/user.schema";
 import Link from "next/link";

@@ -1,9 +1,9 @@
 "use client";
 import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
-import { useDeleteComponent } from "@/lib/api/componentApi/useDeleteComponent";
+import { useDeleteComponent } from "@/lib/hooks/componentApi/useDeleteComponent";
 
-import { useComponents } from "@/lib/api/componentApi/useComponents";
+import { useComponents } from "@/lib/hooks/componentApi/useComponents";
 import { useEffect, useState } from "react";
 import RoleProtected from "@/components/RoleProtection";
 import Link from "next/link";
