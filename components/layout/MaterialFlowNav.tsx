@@ -9,29 +9,29 @@ function MaterialFlowNav() {
 
   return (
     <div className="flex gap-5">
-      <Option pathParts={pathParts} href="material-in" text="Material In"/>|
-      <Option pathParts={pathParts} href="material-out" text="Material Out" />|
+      <Option pathParts={pathParts} href="material/material-in" text="Material In"/>|
+      <Option pathParts={pathParts} href="material/material-out" text="Material Out" />|
       <Option
         pathParts={pathParts}
-        href="alloted-material"
+        href="material/alloted-material"
         text="Allotted Material"
       />
       |
       <Option
         pathParts={pathParts}
-        href="low-stock-material-list"
+        href="material/low-stock-material-list"
         text="Low Stock Material List"
       />
       |
       <Option
         pathParts={pathParts}
-        href="rejected-scrap-material"
+        href="material/rejected-scrap-material"
         text="Rejected/Scrap Material"
       />
       |
       <Option
         pathParts={pathParts}
-        href="cancelled-allocation-list"
+        href="material/cancelled-allocation-list"
         text="Cancelled Allocated Material"
       />
     </div>

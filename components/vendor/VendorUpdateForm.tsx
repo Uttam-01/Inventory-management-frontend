@@ -1,11 +1,11 @@
 "use client";
 
-import { useUpdateVendors } from "@/lib/api/vendorApi/useUpdateVendor";
+import { useUpdateVendors } from "@/lib/hooks/vendorApi/useUpdateVendor";
 import { Vendor, vendorSchema } from "@/lib/schemas";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
-import { authRequest } from "@/lib/api/auth";
+import { authRequest } from "@/lib/hooks/auth";
 import Link from "next/link";
 import InputBox from "./InputBox";
 import FormTextArea from "./FormTextArea";
@@ -78,7 +78,7 @@ export default function VendorUpdateForm() {
         </div>
 
         <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
-          <Link href="/vendor-management" className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px] text-[#6B7280] text-[16px] font-normal flex items-center justify-center">Cancel</Link>
+          <Link href="/vendor/vendor-management" className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px] text-[#6B7280] text-[16px] font-normal flex items-center justify-center">Cancel</Link>
           <button type="submit" className="h-[42px] rounded-[8px] w-[154px] text-white bg-[#0F4C81] text-[16px] font-normal flex items-center justify-center">
             {updateVendorMutation.isPending ? "Saving..." : "Save Vendor"}
           </button>

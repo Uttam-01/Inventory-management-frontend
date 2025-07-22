@@ -1,6 +1,6 @@
 "use client";
 
-import { useAddVendors } from "@/lib/api/vendorApi/useAddVendors";
+import { useAddVendors } from "@/lib/hooks/vendorApi/useAddVendors";
 import { vendorSchema } from "@/lib/schemas";
 import { useState } from "react";
 import Link from "next/link";
@@ -64,7 +64,7 @@ export default function VendorForm() {
 
         <div className="w-full flex h-[42px] items-center justify-end gap-4 mt-[25px]">
           <Link
-            href={"/vendor-management"}
+            href={"/vendor/vendor-management"}
             className="border-[#6B7280] h-[42px] text-emoji border-[1px] rounded-[8px] w-[81px] text-[#6B7280] text-[16px] font-normal flex items-center justify-center"
           >
             Cancel

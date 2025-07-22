@@ -1,9 +1,9 @@
 "use client";
 
-import { useComponents } from "@/lib/api/componentApi/useComponents";
+import { useComponents } from "@/lib/hooks/componentApi/useComponents";
 import { useState } from "react";
 import GlobalLoader from "./GlobalLoader";
-import { useVendors } from "@/lib/api/vendorApi/useVendors";
+import { useVendors } from "@/lib/hooks/vendorApi/useVendors";
 interface VendorDropdownProps {
   selected: any;
   setSelected: (Vendor: any) => void;
@@ -21,7 +21,7 @@ export default function VendorDropdown({
   }>({ search: "", page: 0 });
   const { data, isLoading, error } = useVendors(vendorFilters);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [mounted, setMounted] = useState(false);
+
   //console.log(data)
   console.log("FormErrors in VendorDropdown:", formErrors);
 

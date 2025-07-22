@@ -1,12 +1,12 @@
 "use client";
 
-import { useComponents } from "@/lib/api/componentApi/useComponents";
+import { useComponents } from "@/lib/hooks/componentApi/useComponents";
 import { useState } from "react";
 import GlobalLoader from "./GlobalLoader";
 interface ComponentDropdownProps {
   selected: any;
   setSelected: (component: any) => void;
-    formErrors? : { [key: string]: string }
+    formErrors?: Record<string, string>;
 }
 
 export default function ComponentDropdown({

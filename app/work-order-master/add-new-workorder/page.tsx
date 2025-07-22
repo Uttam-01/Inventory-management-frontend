@@ -1,6 +1,6 @@
 "use client";
-import { useMachines } from "@/lib/api/machineApi/useMachines";
-import { useAddWorkOrder } from "@/lib/api/wokOrderApi/useAddWorkOrder";
+import { useMachines } from "@/lib/hooks/machineApi/useMachines";
+import { useAddWorkOrder } from "@/lib/hooks/wokOrderApi/useAddWorkOrder";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

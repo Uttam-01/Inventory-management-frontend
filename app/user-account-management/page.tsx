@@ -3,7 +3,7 @@ import AddButton from "@/components/ui/Add";
 import Edit from "@/components/ui/Edit";
 import Delete from "@/components/ui/Delete";
 import { useEffect, useState } from "react";
-import { useUsers } from "@/lib/api/userApi/useUsers";
+import { useUsers } from "@/lib/hooks/userApi/useUsers";
 import RoleProtected from "@/components/RoleProtection";
 import GlobalLoader from "@/components/layout/GlobalLoader";
 
